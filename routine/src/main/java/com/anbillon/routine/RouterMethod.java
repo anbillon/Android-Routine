@@ -2,6 +2,7 @@ package com.anbillon.routine;
 
 import android.content.Intent;
 import android.os.Bundle;
+import com.anbillon.routine.app.Anim;
 import com.anbillon.routine.app.Caller;
 import com.anbillon.routine.app.Extra;
 import com.anbillon.routine.app.ExtraSet;
@@ -131,6 +132,9 @@ final class RouterMethod {
       } else if (annotation instanceof Flags) {
         Flags flags = (Flags) annotation;
         return new MethodHandler.Flags(flags.value(), (flags.set()));
+      } else if (annotation instanceof Anim) {
+        Anim anim = (Anim) annotation;
+        return new MethodHandler.Anim(anim.enter(), anim.exit());
       }
 
       /* no annotation method */

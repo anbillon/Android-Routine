@@ -90,8 +90,8 @@ public final class Routine {
   /**
    * Caller resolver to call the router.
    *
-   * @param caller caller
-   * @param <T> type of caller
+   * @param caller resolver
+   * @param <T> type of resolver
    * @return {@link Resolver}
    */
   <T> Resolver resolver(T caller) {
@@ -103,7 +103,7 @@ public final class Routine {
       }
     }
 
-    throw new IllegalArgumentException("No caller found, caller type is not supported.");
+    throw new IllegalArgumentException("No resolver found, resolver type is not supported.");
   }
 
   /**
