@@ -144,10 +144,11 @@ public final class RoutineAuthInterceptor implements Interceptor {
 Download
 ========
 Add in your gradle.build:
+
 	repositories {
 		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 	}
-	
+
 	compile 'com.anbillon.routine:routine:1.0.1.1-SNAPSHOT'
 
 

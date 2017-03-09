@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 /**
- * A context to resolve different caller.
+ * A context to resolve different resolver.
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
  */
@@ -14,9 +14,10 @@ public interface Resolver {
 
   Context context();
 
-  void startActivity(Intent intent) throws ActivityNotFoundException;
+  void startActivity(Intent intent, int enterAnim, int exitAnim) throws ActivityNotFoundException;
 
-  void startActivityForResult(Intent intent, int requestCode) throws ActivityNotFoundException;
+  void startActivityForResult(Intent intent, int requestCode, int enterAnim, int exitAnim)
+      throws ActivityNotFoundException;
 
   abstract class Factory {
 

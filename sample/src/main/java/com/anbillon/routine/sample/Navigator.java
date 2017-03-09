@@ -3,6 +3,7 @@ package com.anbillon.routine.sample;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
+import com.anbillon.routine.app.Anim;
 import com.anbillon.routine.app.Caller;
 import com.anbillon.routine.app.Extra;
 import com.anbillon.routine.app.Flags;
@@ -10,6 +11,7 @@ import com.anbillon.routine.app.Page;
 import com.anbillon.routine.app.PageName;
 import com.anbillon.routine.app.RequestCode;
 import com.anbillon.routine.app.SchemeUrl;
+import com.anbillon.routine.sample.ui.AnimActivity;
 import com.anbillon.routine.sample.ui.DemoActivity;
 import com.anbillon.routine.sample.ui.HtmlActivity;
 
@@ -48,6 +50,14 @@ public interface Navigator {
    * @param context context to use
    */
   @PageName("com.anbillon.DemoActivity") void navigateWithNotFound(@Caller Context context);
+
+  /**
+   * Navigate with animation.
+   *
+   * @param context activity context to use
+   */
+  @Page(AnimActivity.class) @Anim(enter = R.anim.enter) void navigateWithAnim(
+      @Caller Context context);
 
   /**
    * Navigate to {@link HtmlActivity} with activity page.

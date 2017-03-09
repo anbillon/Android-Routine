@@ -30,6 +30,7 @@ public final class MainFragment extends Fragment implements View.OnClickListener
     view.findViewById(R.id.btn_page_name).setOnClickListener(this);
     view.findViewById(R.id.btn_page).setOnClickListener(this);
     view.findViewById(R.id.btn_scheme_filter).setOnClickListener(this);
+    view.findViewById(R.id.btn_animation).setOnClickListener(this);
     view.findViewById(R.id.btn_html_scheme).setOnClickListener(this);
     view.findViewById(R.id.btn_not_found).setOnClickListener(this);
     navigator = ((SampleApplication) getActivity().getApplication()).navigator();
@@ -56,6 +57,10 @@ public final class MainFragment extends Fragment implements View.OnClickListener
 
       case R.id.btn_scheme_filter:
         navigator.navigateWithFilters(getActivity());
+        break;
+
+      case R.id.btn_animation:
+        navigator.navigateWithAnim(getActivity());
         break;
 
       case R.id.btn_html_scheme:

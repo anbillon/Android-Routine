@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 
 /**
- * Built in caller resolver factories.
+ * Built in resolver resolver factories.
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
  */
@@ -40,13 +40,17 @@ final class BuiltInResolverFactories extends Resolver.Factory {
       return activity;
     }
 
-    @Override public void startActivity(Intent intent) throws ActivityNotFoundException {
+    @Override public void startActivity(Intent intent, int enterAnim, int exitAnim)
+        throws ActivityNotFoundException {
       activity.startActivity(intent);
+      activity.overridePendingTransition(enterAnim, exitAnim);
     }
 
-    @Override public void startActivityForResult(Intent intent, int requestCode)
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode, int enterAnim, int exitAnim)
         throws ActivityNotFoundException {
       activity.startActivityForResult(intent, requestCode);
+      activity.overridePendingTransition(enterAnim, exitAnim);
     }
   }
 
@@ -65,13 +69,17 @@ final class BuiltInResolverFactories extends Resolver.Factory {
       return fragment.getActivity();
     }
 
-    @Override public void startActivity(Intent intent) throws ActivityNotFoundException {
+    @Override public void startActivity(Intent intent, int enterAnim, int exitAnim)
+        throws ActivityNotFoundException {
       fragment.startActivity(intent);
+      fragment.getActivity().overridePendingTransition(enterAnim, exitAnim);
     }
 
-    @Override public void startActivityForResult(Intent intent, int requestCode)
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode, int enterAnim, int exitAnim)
         throws ActivityNotFoundException {
       fragment.startActivityForResult(intent, requestCode);
+      fragment.getActivity().overridePendingTransition(enterAnim, exitAnim);
     }
   }
 
@@ -90,13 +98,15 @@ final class BuiltInResolverFactories extends Resolver.Factory {
       return context;
     }
 
-    @Override public void startActivity(Intent intent) throws ActivityNotFoundException {
+    @Override public void startActivity(Intent intent, int enterAnim, int exitAnim)
+        throws ActivityNotFoundException {
       context.startActivity(intent);
     }
 
-    @Override public void startActivityForResult(Intent intent, int requestCode)
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode, int enterAnim, int exitAnim)
         throws ActivityNotFoundException {
-      throw new RuntimeException("Unsopported method for this type of caller");
+      throw new RuntimeException("Unsopported method for this type of resolver");
     }
   }
 }
