@@ -144,7 +144,7 @@ public final class RoutineAuthInterceptor implements Interceptor {
 Download
 ========
 
-	compile 'com.anbillon.routine:routine:1.0.0.2-SNAPSHOT'
+	compile 'com.anbillon.routine:routine:1.0.0'
 
 
 
