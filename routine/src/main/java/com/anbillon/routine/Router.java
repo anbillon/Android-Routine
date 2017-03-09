@@ -3,9 +3,12 @@ package com.anbillon.routine;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.anbillon.routine.Utils.checkNotNull;
+import static com.anbillon.routine.Utils.isMainThread;
 
 /**
  * A router. Instances of this class are immutable.
@@ -22,6 +25,7 @@ public final class Router {
   private final Resolver resolver;
   private final Intent intent;
   private final int requestCode;
+  private final Handler mainHandler;
 
   private Router(Builder builder) {
     this.method = builder.method;
@@ -33,12 +37,10 @@ public final class Router {
     this.resolver = builder.resolver;
     this.intent = checkNotNull(builder.intent, "intent == null in Router");
     this.requestCode = builder.requestCode;
+    this.mainHandler = new Handler(Looper.getMainLooper());
   }
 
-  /**
-   * Start current router call to open new page.
-   */
-  public boolean start() {
+  private void startPage() {
     try {
       if (requestCode >= 0) {
         resolver.startActivityForResult(intent, requestCode);
@@ -47,10 +49,22 @@ public final class Router {
         resolver.startActivity(intent);
       }
     } catch (ActivityNotFoundException ignore) {
-      return false;
     }
+  }
 
-    return true;
+  /**
+   * Start current router call to open new page.
+   */
+  public void start() {
+    if (isMainThread()) {
+      startPage();
+    } else {
+      mainHandler.post(new Runnable() {
+        @Override public void run() {
+          startPage();
+        }
+      });
+    }
   }
 
   public Method method() {
