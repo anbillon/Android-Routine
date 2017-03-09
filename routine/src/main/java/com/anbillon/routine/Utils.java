@@ -3,6 +3,7 @@ package com.anbillon.routine;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Looper;
 import android.os.Parcelable;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -184,5 +185,14 @@ final class Utils {
   static String resolveSchemeUrl(String schemeUrl) {
     int index = checkNotNull(schemeUrl, "schemeUrl == null").lastIndexOf("?");
     return index > 0 ? schemeUrl.substring(0, index) : schemeUrl;
+  }
+
+  /**
+   * To check if current thread was main thread.
+   *
+   * @return true if was main thread, otherwise return false
+   */
+  static boolean isMainThread() {
+    return Thread.currentThread() == Looper.getMainLooper().getThread();
   }
 }
