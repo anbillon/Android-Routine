@@ -8,7 +8,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import static com.anbillon.routine.Utils.getRawType;
+import static com.anbillon.routine.Utils.getExtraRawType;
 
 /**
  * A builder to build {@link Router} with methods and parameters.
@@ -118,7 +118,7 @@ final class RouterBuilder {
    * @param <T> type of @{code value}
    */
   @SuppressWarnings("unchecked") <T> void putExtra(String name, Type type, T value) {
-    Class<?> rawParameterType = getRawType(type);
+    Class<?> rawParameterType = getExtraRawType(type);
     if (rawParameterType == boolean.class) {
       intent.putExtra(name, Boolean.parseBoolean(value.toString()));
     } else if (rawParameterType == byte.class) {

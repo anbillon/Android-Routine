@@ -1,0 +1,24 @@
+apply plugin: 'com.android.library'
+android {
+  compileSdkVersion rootProject.ext.compileSdkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
+
+  defaultConfig {
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
+  }
+
+  lintOptions {
+    abortOnError false
+  }
+
+  dependencies {
+    provided project(':routine')
+    provided rootProject.ext.rxJava
+
+    testCompile rootProject.ext.junit
+    testCompile rootProject.ext.robolectric
+  }
+}
+
+apply from: rootProject.file('gradle/maven-push.gradle')

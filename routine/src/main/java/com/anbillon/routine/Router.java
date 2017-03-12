@@ -3,12 +3,9 @@ package com.anbillon.routine;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.anbillon.routine.Utils.checkNotNull;
-import static com.anbillon.routine.Utils.isMainThread;
 
 /**
  * A router. Instances of this class are immutable.
@@ -27,7 +24,6 @@ public final class Router {
   private final int requestCode;
   private final int enterAnim;
   private final int exitAnim;
-  private final Handler mainHandler;
 
   private Router(Builder builder) {
     this.method = builder.method;
@@ -41,10 +37,14 @@ public final class Router {
     this.requestCode = builder.requestCode;
     this.enterAnim = builder.enterAnim;
     this.exitAnim = builder.exitAnim;
-    this.mainHandler = new Handler(Looper.getMainLooper());
   }
 
-  private void startPage() {
+  /**
+   * Start current router to open new page.
+   *
+   * @return ture if open successfully, otherwise return false
+   */
+  public boolean start() {
     try {
       if (requestCode >= 0) {
         resolver.startActivityForResult(intent, requestCode, enterAnim, exitAnim);
@@ -53,22 +53,10 @@ public final class Router {
         resolver.startActivity(intent, enterAnim, exitAnim);
       }
     } catch (ActivityNotFoundException ignore) {
+      return false;
     }
-  }
 
-  /**
-   * Start current router call to open new page.
-   */
-  public void start() {
-    if (isMainThread()) {
-      startPage();
-    } else {
-      mainHandler.post(new Runnable() {
-        @Override public void run() {
-          startPage();
-        }
-      });
-    }
+    return true;
   }
 
   public Method method() {

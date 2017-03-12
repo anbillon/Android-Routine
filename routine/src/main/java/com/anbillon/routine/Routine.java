@@ -1,8 +1,10 @@
 package com.anbillon.routine;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,12 +34,14 @@ public final class Routine {
   private final Map<Method, RouterMethod> routerMethodCache = new ConcurrentHashMap<>();
   private final List<Interceptor> interceptors;
   private final List<Filter> filters;
+  private final List<Adapter.Factory> adapterFactories;
   private final List<Resolver.Factory> resolverFactories;
   private final Class<?> errorPage;
 
   private Routine(Builder builder) {
     this.interceptors = Utils.immutableList(builder.interceptors);
     this.filters = Utils.immutableList(builder.filters);
+    this.adapterFactories = Utils.immutableList(builder.adapterFactories);
     this.resolverFactories = Utils.immutableList(builder.resolverFactories);
     this.errorPage = builder.errorPage;
   }
@@ -81,14 +85,35 @@ public final class Routine {
             }
 
             RouterMethod routerMethod = loadRouterMethod(method);
-            RouterCall routerCall = new RouterCall(routerMethod, interceptors, filters, args);
-            return routerCall.create();
+            RouterCall routerCall = new RouterCall<>(routerMethod, interceptors, filters, args);
+            return routerMethod.adapter.adapt(routerCall.create());
           }
         });
   }
 
   /**
-   * Caller resolver to call the router.
+   * Returns the {@link Adapter} for {@code returnType} from the available {@linkplain
+   * #adapterFactories factories}.
+   *
+   * @param returnType return type
+   * @param annotations annotations
+   * @return {@link Adapter}
+   */
+  Adapter<?> adapter(Type returnType, Annotation[] annotations) {
+    checkNotNull(returnType, "returnType == null");
+    checkNotNull(annotations, "annotations == null");
+    for (int i = 0, count = adapterFactories.size(); i < count; i++) {
+      Adapter<?> adapter = adapterFactories.get(i).get(returnType, annotations, this);
+      if (adapter != null) {
+        return adapter;
+      }
+    }
+
+    throw new IllegalArgumentException("Could not locate adapter for " + returnType + ".");
+  }
+
+  /**
+   * Returns the {@link Resolver} from available {@linkplain #resolverFactories factories}.
    *
    * @param caller resolver
    * @param <T> type of resolver
@@ -141,11 +166,24 @@ public final class Routine {
   public static final class Builder {
     private List<Interceptor> interceptors = new ArrayList<>();
     private List<Filter> filters = new ArrayList<>();
+    private List<Adapter.Factory> adapterFactories = new ArrayList<>();
     private List<Resolver.Factory> resolverFactories = new ArrayList<>();
     private Class<?> errorPage;
 
     public Builder() {
+      adapterFactories.add(new DefaultAdapterFactories());
       resolverFactories.add(new BuiltInResolverFactories());
+    }
+
+    /**
+     * Add one {@link Adapter.Factory} into routine.
+     *
+     * @param factory {@link Adapter.Factory}
+     * @return this object for further chaining
+     */
+    public Builder addAdapterFactory(Adapter.Factory factory) {
+      adapterFactories.add(checkNotNull(factory, "factory == null"));
+      return this;
     }
 
     /**

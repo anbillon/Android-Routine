@@ -311,7 +311,7 @@ public final class ExtrasTest {
 
   @Test public void testSchemeUrlExtra() throws Exception {
     navigator.withSchemeUrl(context);
-    String id = nextIntent().getStringExtra("id");
+    String id = nextIntent().getData().getQueryParameter("id");
     assertEquals("2", id);
   }
 }

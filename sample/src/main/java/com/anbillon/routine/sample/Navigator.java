@@ -3,6 +3,7 @@ package com.anbillon.routine.sample;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
+import com.anbillon.routine.Router;
 import com.anbillon.routine.app.Anim;
 import com.anbillon.routine.app.Caller;
 import com.anbillon.routine.app.Extra;
@@ -14,6 +15,7 @@ import com.anbillon.routine.app.SchemeUrl;
 import com.anbillon.routine.sample.ui.AnimActivity;
 import com.anbillon.routine.sample.ui.DemoActivity;
 import com.anbillon.routine.sample.ui.HtmlActivity;
+import rx.Observable;
 
 /**
  * @author Vincent Cheung (coolingfall@gmail.com)
@@ -42,14 +44,15 @@ public interface Navigator {
   /**
    * Navigate to {@link DemoActivity} with activity page.
    */
-  @Page(DemoActivity.class) void navigateToDemoWithPage(@Caller Fragment fragment);
+  @Page(DemoActivity.class) Router navigateToDemoWithPage(@Caller Fragment fragment);
 
   /**
    * Navigate to a page but not found.
    *
    * @param context context to use
    */
-  @PageName("com.anbillon.DemoActivity") void navigateWithNotFound(@Caller Context context);
+  @PageName("com.anbillon.DemoActivity") Observable<Boolean> navigateWithNotFound(
+      @Caller Context context);
 
   /**
    * Navigate with animation.

@@ -25,7 +25,7 @@
         <category android:name="android.intent.category.BROWSABLE"/>
 
         <data
-            android:host="test"
+            android:host="routine"
             android:path="/login"
             android:scheme="demo"
             />
