@@ -22,10 +22,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
   /**
    * Enter animation resource id.
    */
-  int enter() default -1;
+  int enter() default 0;
 
   /**
    * Exit animation resource id.
    */
-  int exit() default -1;
+  int exit() default 0;
 }
