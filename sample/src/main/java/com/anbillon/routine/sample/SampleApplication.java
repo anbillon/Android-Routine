@@ -2,6 +2,7 @@ package com.anbillon.routine.sample;
 
 import android.app.Application;
 import com.anbillon.routine.Routine;
+import com.anbillon.routine.adapter.rxjava.RxJavaAdapterFactory;
 import com.anbillon.routine.logging.RoutineLoggingInterceptor;
 import com.anbillon.routine.sample.interceptor.IdentityInterceptor;
 import com.anbillon.routine.sample.interceptor.RoutineAuthInterceptor;
@@ -19,6 +20,7 @@ public final class SampleApplication extends Application {
 
     Routine routine =
         new Routine.Builder().addResolverFactory(SupportFragmentResolverFactory.create())
+            .addAdapterFactory(RxJavaAdapterFactory.create())
             .addFilter(new SchemeFilter())
             .addInterceptor(new RoutineAuthInterceptor())
             .addInterceptor(new IdentityInterceptor())

@@ -1,6 +1,5 @@
 package com.anbillon.routine;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,13 +8,13 @@ import java.util.List;
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
  */
-final class RouterCall {
-  private final RouterMethod routerMethod;
+final class RouterCall<T> {
+  private final RouterMethod<T> routerMethod;
   private final List<Interceptor> interceptors;
   private final List<Filter> filters;
   private final Object[] args;
 
-  RouterCall(RouterMethod routerMethod, List<Interceptor> interceptors, List<Filter> filters,
+  RouterCall(RouterMethod<T> routerMethod, List<Interceptor> interceptors, List<Filter> filters,
       Object[] args) {
     this.routerMethod = routerMethod;
     this.interceptors = interceptors;
@@ -23,7 +22,7 @@ final class RouterCall {
     this.args = args;
   }
 
-  Object create() {
+  Router create() {
     Router originRouter = routerMethod.toRouter(args);
 
     /* build filters with matcher */
@@ -39,17 +38,8 @@ final class RouterCall {
     fullInterceptors.addAll(interceptors);
     fullInterceptors.add(new RealInterceptor());
     Interceptor.Chain interceptorChain = new InterceptorChain(fullInterceptors, 0, originRouter);
-    /* proceed the chain to get real router */
-    Router realRouter = interceptorChain.proceed(originRouter);
-    Type returnType = routerMethod.returnType();
-    if (returnType == void.class) {
-      realRouter.start();
-    } else if (returnType == Router.class) {
-      return realRouter;
-    } else {
-      throw new IllegalStateException("Unsupported return type.");
-    }
 
-    return null;
+    /* proceed the chain to get real router */
+    return interceptorChain.proceed(originRouter);
   }
 }

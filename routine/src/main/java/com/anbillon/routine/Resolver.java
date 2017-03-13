@@ -19,9 +19,14 @@ public interface Resolver {
   void startActivityForResult(Intent intent, int requestCode, int enterAnim, int exitAnim)
       throws ActivityNotFoundException;
 
+  /**
+   * Creates {@link Resolver} instances based on the caller.
+   */
   abstract class Factory {
-
-    public <T> Resolver create(T caller) {
+    /**
+     * Returns a {@link Resolver} to resovle the caller.
+     */
+    protected <T> Resolver create(T caller) {
       return null;
     }
   }
