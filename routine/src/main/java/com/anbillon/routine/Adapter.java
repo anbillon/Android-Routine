@@ -14,7 +14,7 @@ import java.lang.reflect.Type;
 public interface Adapter<T> {
   /**
    * Returns the value type that this adapter uses when calling router. This type is used to prepare
-   * the {@code call} passed to {@link #adapt}.
+   * the {@code router} passed to {@link #adapt}.
    */
   Type callType();
 

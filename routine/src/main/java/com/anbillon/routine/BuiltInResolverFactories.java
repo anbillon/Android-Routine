@@ -43,6 +43,9 @@ final class BuiltInResolverFactories extends Resolver.Factory {
     @Override public void startActivity(Intent intent, int enterAnim, int exitAnim)
         throws ActivityNotFoundException {
       activity.startActivity(intent);
+      if (enterAnim == 0 && exitAnim == 0) {
+        return;
+      }
       activity.overridePendingTransition(enterAnim, exitAnim);
     }
 
@@ -50,6 +53,9 @@ final class BuiltInResolverFactories extends Resolver.Factory {
     public void startActivityForResult(Intent intent, int requestCode, int enterAnim, int exitAnim)
         throws ActivityNotFoundException {
       activity.startActivityForResult(intent, requestCode);
+      if (enterAnim == 0 && exitAnim == 0) {
+        return;
+      }
       activity.overridePendingTransition(enterAnim, exitAnim);
     }
   }
@@ -72,6 +78,9 @@ final class BuiltInResolverFactories extends Resolver.Factory {
     @Override public void startActivity(Intent intent, int enterAnim, int exitAnim)
         throws ActivityNotFoundException {
       fragment.startActivity(intent);
+      if (enterAnim == 0 && exitAnim == 0) {
+        return;
+      }
       fragment.getActivity().overridePendingTransition(enterAnim, exitAnim);
     }
 
@@ -79,6 +88,9 @@ final class BuiltInResolverFactories extends Resolver.Factory {
     public void startActivityForResult(Intent intent, int requestCode, int enterAnim, int exitAnim)
         throws ActivityNotFoundException {
       fragment.startActivityForResult(intent, requestCode);
+      if (enterAnim == 0 && exitAnim == 0) {
+        return;
+      }
       fragment.getActivity().overridePendingTransition(enterAnim, exitAnim);
     }
   }
