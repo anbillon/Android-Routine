@@ -139,18 +139,20 @@ public final class RoutineAuthInterceptor implements Interceptor {
 ```
 * Enjoy it.
 
+Snapshots of the development version are available in [Sonatype's snapshots repository][1].
 
 
 Download
 ========
+Add in your gradle.build:
 
-	compile 'com.anbillon.routine:routine:1.0.0'
+	compile 'com.anbillon.routine:routine:1.1.0'
 
 
 
 Credits
 =======
-* [Retrofit][1] - Type-safe HTTP client for Android and Java by Square, Inc
+* [Retrofit][2] - Type-safe HTTP client for Android and Java by Square, Inc
 
 
 
@@ -172,4 +174,5 @@ License
     limitations under the License.
 
 
-[1]: https://github.com/square/retrofit
+[1]: https://oss.sonatype.org/content/repositories/snapshots/
+[2]: https://github.com/square/retrofit

@@ -110,19 +110,28 @@ final class Utils {
         || type == Parcelable[].class;
   }
 
+  static Class<?> getExtraRawType(Type type) {
+    Class<?> rawType = getRawType(type);
+    if (!(type instanceof Class<?>)) {
+      return rawType;
+    }
+
+    Class<?>[] interfaces = ((Class<?>) type).getInterfaces();
+    if (interfaces.length != 0) {
+      for (Class<?> ininterfaceClazz : interfaces) {
+        if (isSerializableType(ininterfaceClazz)) {
+          return ininterfaceClazz;
+        }
+      }
+    }
+
+    return rawType;
+  }
+
   static Class<?> getRawType(Type type) {
     if (type == null) throw new NullPointerException("type == null");
 
     if (type instanceof Class<?>) {
-      Class<?>[] interfaces = ((Class<?>) type).getInterfaces();
-      if (interfaces.length != 0) {
-        for (Class<?> ininterfaceClazz : interfaces) {
-          if (isSerializableType(ininterfaceClazz)) {
-            return ininterfaceClazz;
-          }
-        }
-      }
-
       /* type is a normal class */
       return (Class<?>) type;
     }
@@ -161,6 +170,19 @@ final class Utils {
         + type
         + "> is of type "
         + type.getClass().getName());
+  }
+
+  static Type getParameterUpperBound(int index, ParameterizedType type) {
+    Type[] types = type.getActualTypeArguments();
+    if (index < 0 || index >= types.length) {
+      throw new IllegalArgumentException(
+          "Index " + index + " not in range [0," + types.length + ") for " + type);
+    }
+    Type paramType = types[index];
+    if (paramType instanceof WildcardType) {
+      return ((WildcardType) paramType).getUpperBounds()[0];
+    }
+    return paramType;
   }
 
   /**

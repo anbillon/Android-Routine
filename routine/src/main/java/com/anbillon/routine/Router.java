@@ -22,6 +22,8 @@ public final class Router {
   private final Resolver resolver;
   private final Intent intent;
   private final int requestCode;
+  private final int enterAnim;
+  private final int exitAnim;
 
   private Router(Builder builder) {
     this.method = builder.method;
@@ -33,18 +35,22 @@ public final class Router {
     this.resolver = builder.resolver;
     this.intent = checkNotNull(builder.intent, "intent == null in Router");
     this.requestCode = builder.requestCode;
+    this.enterAnim = builder.enterAnim;
+    this.exitAnim = builder.exitAnim;
   }
 
   /**
-   * Start current router call to open new page.
+   * Start current router to open new page.
+   *
+   * @return ture if open successfully, otherwise return false
    */
   public boolean start() {
     try {
       if (requestCode >= 0) {
-        resolver.startActivityForResult(intent, requestCode);
+        resolver.startActivityForResult(intent, requestCode, enterAnim, exitAnim);
       } else {
         intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-        resolver.startActivity(intent);
+        resolver.startActivity(intent, enterAnim, exitAnim);
       }
     } catch (ActivityNotFoundException ignore) {
       return false;
@@ -107,6 +113,8 @@ public final class Router {
     private Resolver resolver;
     private Intent intent;
     private int requestCode;
+    private int enterAnim;
+    private int exitAnim;
 
     Builder() {
     }
@@ -121,6 +129,8 @@ public final class Router {
       this.resolver = router.resolver;
       this.intent = router.intent;
       this.requestCode = router.requestCode;
+      this.enterAnim = router.enterAnim;
+      this.exitAnim = router.exitAnim;
     }
 
     Builder method(Method method) {
@@ -165,6 +175,12 @@ public final class Router {
 
     public Builder requestCode(int requestCode) {
       this.requestCode = requestCode;
+      return this;
+    }
+
+    public Builder anim(int enterAnim, int exitAnim) {
+      this.enterAnim = enterAnim;
+      this.exitAnim = exitAnim;
       return this;
     }
 

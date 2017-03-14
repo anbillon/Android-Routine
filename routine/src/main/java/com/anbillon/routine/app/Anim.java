@@ -8,21 +8,24 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Open a new page via page class. The is same with the normal method to open a new page.
+ * Animation for new page. Enter and exit animation can be set. Use 0 for no animation.
  * <p>
  * For example:
  * <pre><code>
- * {@code} @Page(DemoActivity.class)
+ * {@code} @Anim(enter = R.anim.enter, exit = R.anim.exit)
  * {@code} void navigateToDemo();
  * </code></pre>
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
- * @see SchemeUrl
- * @see PageName
  */
-@Documented @Target(METHOD) @Retention(RUNTIME) public @interface Page {
+@Documented @Target(METHOD) @Retention(RUNTIME) public @interface Anim {
   /**
-   * The value of page.
+   * Enter animation resource id.
    */
-  Class<?> value();
+  int enter() default 0;
+
+  /**
+   * Exit animation resource id.
+   */
+  int exit() default 0;
 }

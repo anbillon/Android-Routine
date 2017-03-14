@@ -72,4 +72,21 @@ abstract class MethodHandler<T> {
       builder.flags(value, set);
     }
   }
+
+  static final class Anim extends MethodHandler<Integer> {
+    private final Integer exit;
+
+    Anim(Integer value, Integer exit) {
+      super(value);
+      this.exit = exit;
+    }
+
+    @Override void apply(RouterBuilder builder) throws IllegalArgumentException {
+      if (value == null || exit == null) {
+        throw new IllegalArgumentException("Anim value must not be null.");
+      }
+
+      builder.anim(value, exit);
+    }
+  }
 }

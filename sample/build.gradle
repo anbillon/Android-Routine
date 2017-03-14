@@ -26,8 +26,12 @@ android {
 
 dependencies {
   compile rootProject.ext.appcompatV7
+  compile rootProject.ext.rxJava
+  compile rootProject.ext.rxAndroid
+
   compile project(':routine')
   compile project(':routine-support-resolver')
+  compile project(':routine-adapter-rxjava')
   compile project(':routine-logging-interceptor')
 
   testCompile rootProject.ext.junit

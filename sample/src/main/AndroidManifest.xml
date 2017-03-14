@@ -25,7 +25,7 @@
         <category android:name="android.intent.category.BROWSABLE"/>
 
         <data
-            android:host="test"
+            android:host="routine"
             android:path="/login"
             android:scheme="demo"
             />
@@ -34,6 +34,7 @@
     <activity android:name=".ui.LoginActivity"/>
     <activity android:name=".ui.IdentityActivity"/>
     <activity android:name=".ui.FilterActivity"/>
+    <activity android:name=".ui.AnimActivity"/>
     <activity android:name=".ui.HtmlActivity"/>
     <activity android:name=".ui.ErrorActivity"/>
   </application>

@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import com.anbillon.routine.sample.Navigator;
 import com.anbillon.routine.sample.R;
 import com.anbillon.routine.sample.SampleApplication;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Vincent Cheung (coolingfall@gmail.com)
@@ -30,6 +33,7 @@ public final class MainFragment extends Fragment implements View.OnClickListener
     view.findViewById(R.id.btn_page_name).setOnClickListener(this);
     view.findViewById(R.id.btn_page).setOnClickListener(this);
     view.findViewById(R.id.btn_scheme_filter).setOnClickListener(this);
+    view.findViewById(R.id.btn_animation).setOnClickListener(this);
     view.findViewById(R.id.btn_html_scheme).setOnClickListener(this);
     view.findViewById(R.id.btn_not_found).setOnClickListener(this);
     navigator = ((SampleApplication) getActivity().getApplication()).navigator();
@@ -51,11 +55,15 @@ public final class MainFragment extends Fragment implements View.OnClickListener
         break;
 
       case R.id.btn_page:
-        navigator.navigateToDemoWithPage(this);
+        navigator.navigateToDemoWithPage(this).start();
         break;
 
       case R.id.btn_scheme_filter:
         navigator.navigateWithFilters(getActivity());
+        break;
+
+      case R.id.btn_animation:
+        navigator.navigateWithAnim(getActivity());
         break;
 
       case R.id.btn_html_scheme:
@@ -63,7 +71,19 @@ public final class MainFragment extends Fragment implements View.OnClickListener
         break;
 
       case R.id.btn_not_found:
-        navigator.navigateWithNotFound(getActivity());
+        new Thread(new Runnable() {
+          @Override public void run() {
+            navigator.navigateWithNotFound(getActivity())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Boolean>() {
+                  @Override public void call(Boolean result) {
+                    Log.d("TAG", "result: " + result);
+                  }
+                });
+          }
+        }).start();
+
         break;
     }
   }

@@ -26,12 +26,22 @@ final class SupportFragmentResolver implements Resolver {
     return fragment.getContext();
   }
 
-  @Override public void startActivity(Intent intent) throws ActivityNotFoundException {
+  @Override public void startActivity(Intent intent, int enterAnim, int exitAnim)
+      throws ActivityNotFoundException {
     fragment.startActivity(intent);
+    if (enterAnim == 0 && exitAnim == 0) {
+      return;
+    }
+    fragment.getActivity().overridePendingTransition(enterAnim, exitAnim);
   }
 
-  @Override public void startActivityForResult(Intent intent, int requestCode)
+  @Override
+  public void startActivityForResult(Intent intent, int requestCode, int enterAnim, int exitAnim)
       throws ActivityNotFoundException {
     fragment.startActivityForResult(intent, requestCode);
+    if (enterAnim == 0 && exitAnim == 0) {
+      return;
+    }
+    fragment.getActivity().overridePendingTransition(enterAnim, exitAnim);
   }
 }

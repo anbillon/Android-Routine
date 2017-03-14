@@ -1,6 +1,5 @@
 package com.anbillon.routine;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -9,7 +8,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import static com.anbillon.routine.Utils.getRawType;
+import static com.anbillon.routine.Utils.getExtraRawType;
 
 /**
  * A builder to build {@link Router} with methods and parameters.
@@ -26,6 +25,8 @@ final class RouterBuilder {
   private Class<?> errorPage;
   private Resolver resolver;
   private int requestCode = -1;
+  private int enterAnim;
+  private int exitAnim;
 
   RouterBuilder(Class<?> errorPage) {
     this.errorPage = errorPage;
@@ -33,7 +34,7 @@ final class RouterBuilder {
   }
 
   /**
-   * Add scheme url into current call if existed.
+   * Add scheme url into current builder if existed.
    *
    * @param schemeUrl scheme url
    */
@@ -44,9 +45,9 @@ final class RouterBuilder {
   }
 
   /**
-   * Add page destination into current call if existed.
+   * Add page destination into current builder if existed.
    *
-   * @param pageName page callerName
+   * @param pageName page pageName
    */
   void pageName(String pageName) {
     this.pageName = pageName;
@@ -55,7 +56,7 @@ final class RouterBuilder {
   }
 
   /**
-   * Add page into current call if existed.
+   * Add page into current builder if existed.
    *
    * @param page page
    */
@@ -66,7 +67,7 @@ final class RouterBuilder {
   }
 
   /**
-   * Add flags into current call if existed.
+   * Add flags into current builder if existed.
    *
    * @param flags flags
    * @param setFlags use set method or not
@@ -80,16 +81,27 @@ final class RouterBuilder {
   }
 
   /**
-   * Add {@link Context} caller into this call.
+   * Add animation resource id into builder.
+   *
+   * @param enterAnim enter animationn resource id
+   * @param exitAnim exit animationn resource id
+   */
+  void anim(int enterAnim, int exitAnim) {
+    this.enterAnim = enterAnim;
+    this.exitAnim = exitAnim;
+  }
+
+  /**
+   * Add {@link Resolver} into this builder.
    *
    * @param resolver {@link Resolver}
    */
-  void caller(Resolver resolver) {
+  void resolver(Resolver resolver) {
     this.resolver = resolver;
   }
 
   /**
-   * Add request code into current call.
+   * Add request code into current builder.
    *
    * @param requestCode request code
    */
@@ -106,7 +118,7 @@ final class RouterBuilder {
    * @param <T> type of @{code value}
    */
   @SuppressWarnings("unchecked") <T> void putExtra(String name, Type type, T value) {
-    Class<?> rawParameterType = getRawType(type);
+    Class<?> rawParameterType = getExtraRawType(type);
     if (rawParameterType == boolean.class) {
       intent.putExtra(name, Boolean.parseBoolean(value.toString()));
     } else if (rawParameterType == byte.class) {
@@ -197,6 +209,7 @@ final class RouterBuilder {
         .resolver(resolver)
         .intent(intent)
         .requestCode(requestCode)
+        .anim(enterAnim, exitAnim)
         .build();
   }
 }

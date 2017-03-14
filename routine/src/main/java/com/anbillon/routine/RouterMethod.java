@@ -2,6 +2,7 @@ package com.anbillon.routine;
 
 import android.content.Intent;
 import android.os.Bundle;
+import com.anbillon.routine.app.Anim;
 import com.anbillon.routine.app.Caller;
 import com.anbillon.routine.app.Extra;
 import com.anbillon.routine.app.ExtraSet;
@@ -14,22 +15,24 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
+import static com.anbillon.routine.Utils.getRawType;
+
 /**
  * Parse an invocation of an interface method into a router.
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
  */
-final class RouterMethod {
+final class RouterMethod<T> {
   private final MethodHandler<?>[] methodHandlers;
   private final ParameterHandler<?>[] parameterHandlers;
   private final Class<?> errorPage;
-  private final Type returnType;
+  final Adapter<T> adapter;
 
-  RouterMethod(Builder builder) {
+  RouterMethod(Builder<T> builder) {
     this.methodHandlers = builder.methodHandlers;
     this.parameterHandlers = builder.parameterHandlers;
+    this.adapter = builder.adapter;
     this.errorPage = builder.routine.errorPage();
-    this.returnType = builder.method.getGenericReturnType();
   }
 
   Router toRouter(Object... args) throws IllegalArgumentException {
@@ -58,11 +61,7 @@ final class RouterMethod {
     return routerBuilder.build();
   }
 
-  Type returnType() {
-    return returnType;
-  }
-
-  static final class Builder {
+  static final class Builder<T> {
     final Routine routine;
     final Method method;
     final Annotation[] methodAnnotations;
@@ -75,6 +74,7 @@ final class RouterMethod {
     boolean gotExtraSet;
     ParameterHandler<?>[] parameterHandlers;
     MethodHandler<?>[] methodHandlers;
+    Adapter<T> adapter;
 
     public Builder(Routine routine, Method method) {
       this.routine = routine;
@@ -85,6 +85,18 @@ final class RouterMethod {
     }
 
     public RouterMethod build() {
+      adapter = createAdapter();
+      Type callType = adapter.callType();
+      if (callType != void.class
+          && callType != Void.class
+          && callType != boolean.class
+          && callType != Boolean.class
+          && callType != Router.class) {
+        throw methodError("'"
+            + getRawType(callType).getName()
+            + "' is not a valid call type. Routine supports void, boolean and Router.");
+      }
+
       int methodCount = methodAnnotations.length;
       methodHandlers = new MethodHandler<?>[methodCount];
       for (int m = 0; m < methodCount; m++) {
@@ -117,7 +129,22 @@ final class RouterMethod {
         throw methodError("A router must contain one @Caller.");
       }
 
-      return new RouterMethod(this);
+      return new RouterMethod<>(this);
+    }
+
+    @SuppressWarnings("unchecked") private Adapter<T> createAdapter() {
+      Type returnType = method.getGenericReturnType();
+      if (Utils.hasUnresolvableType(returnType)) {
+        throw methodError("Method return type must not include a type variable or wildcard: %s",
+            returnType);
+      }
+
+      Annotation[] annotations = method.getAnnotations();
+      try {
+        return (Adapter<T>) routine.adapter(returnType, annotations);
+      } catch (RuntimeException e) {
+        throw methodError(e, "Unable to create adapter for %s", returnType);
+      }
     }
 
     private MethodHandler<?> parseMethodAnnotation(Annotation annotation) {
@@ -131,6 +158,9 @@ final class RouterMethod {
       } else if (annotation instanceof Flags) {
         Flags flags = (Flags) annotation;
         return new MethodHandler.Flags(flags.value(), (flags.set()));
+      } else if (annotation instanceof Anim) {
+        Anim anim = (Anim) annotation;
+        return new MethodHandler.Anim(anim.enter(), anim.exit());
       }
 
       /* no annotation method */

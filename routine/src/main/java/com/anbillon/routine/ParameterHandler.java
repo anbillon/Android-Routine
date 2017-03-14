@@ -22,7 +22,7 @@ abstract class ParameterHandler<T> {
         throw new IllegalArgumentException("Caller parameter value must not be null.");
       }
 
-      builder.caller(routine.resolver(value));
+      builder.resolver(routine.resolver(value));
     }
   }
 
