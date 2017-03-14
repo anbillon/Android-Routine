@@ -144,8 +144,10 @@ Snapshots of the development version are available in [Sonatype's snapshots repo
 
 Download
 ========
-Add in your gradle.build:	
-	compile 'com.anbillon.routine:routine:1.0.1.2-SNAPSHOT'
+Add in your gradle.build:
+
+	compile 'com.anbillon.routine:routine:1.1.0'
+
 
 
 Credits

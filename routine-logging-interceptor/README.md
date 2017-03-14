@@ -26,4 +26,4 @@ RoutineLoggingInterceptor logging = new RoutineLoggingInterceptor(new Logger() {
 
 Download
 =======
-	compile 'com.anbillon.routine:logging-interceptor:1.0.1.2-SNAPSHOT'
+	compile 'com.anbillon.routine:logging-interceptor:1.1.0'
