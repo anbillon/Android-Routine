@@ -8,7 +8,7 @@ import java.util.List;
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
  */
-final class RouterCall<T> {
+public final class RouterCall<T> {
   private final RouterMethod<T> routerMethod;
   private final List<Interceptor> interceptors;
   private final List<Filter> filters;
@@ -22,7 +22,11 @@ final class RouterCall<T> {
     this.args = args;
   }
 
-  Router create() {
+  public boolean execute() throws RoutineException {
+    return router().start();
+  }
+
+  public Router router() throws RoutineException {
     Router originRouter = routerMethod.toRouter(args);
 
     /* build filters with matcher */

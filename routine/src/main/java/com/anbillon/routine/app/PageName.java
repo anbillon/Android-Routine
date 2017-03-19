@@ -8,7 +8,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Open a new page via page destination. The destination must be a full destination of the page.
+ * Open a new page via page target. The target must be a full target of the page.
  * <p>
  * For example:
  * <pre><code>

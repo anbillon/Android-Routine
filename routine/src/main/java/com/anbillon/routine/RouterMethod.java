@@ -143,7 +143,7 @@ final class RouterMethod<T> {
       try {
         return (Adapter<T>) routine.adapter(returnType, annotations);
       } catch (RuntimeException e) {
-        throw methodError(e, "Unable to create adapter for %s", returnType);
+        throw methodError(e, "Unable to router adapter for %s", returnType);
       }
     }
 

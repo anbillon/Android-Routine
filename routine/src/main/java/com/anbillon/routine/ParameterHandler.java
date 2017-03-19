@@ -28,21 +28,17 @@ abstract class ParameterHandler<T> {
 
   static final class RequestCode extends ParameterHandler<Integer> {
     @Override void apply(RouterBuilder builder, Integer value) throws IllegalArgumentException {
-      if (value == null || value == -1) {
-        throw new IllegalArgumentException("RequestCode parameter value must not be null or -1.");
+      if (value != null) {
+        builder.requestCode(value);
       }
-
-      builder.requestCode(value);
     }
   }
 
   static final class SchemeUrl extends ParameterHandler<String> {
     @Override void apply(RouterBuilder builder, String value) throws IllegalArgumentException {
-      if (value == null) {
-        throw new IllegalArgumentException("SchemeUrl parameter value must not be null");
+      if (value != null) {
+        builder.schemeUrl(value);
       }
-
-      builder.schemeUrl(value);
     }
   }
 
@@ -56,22 +52,17 @@ abstract class ParameterHandler<T> {
     }
 
     @Override void apply(RouterBuilder builder, T value) throws IllegalArgumentException {
-      if (value == null) {
-        throw new IllegalArgumentException(
-            "Extra parameter \"" + name + "\" value must not be null.");
+      if (value != null) {
+        builder.putExtra(name, type, value);
       }
-
-      builder.putExtra(name, type, value);
     }
   }
 
   static final class ExtraSet<T> extends ParameterHandler<T> {
     @Override void apply(RouterBuilder builder, T value) throws IllegalArgumentException {
-      if (value == null) {
-        throw new IllegalArgumentException("ExtraSet parameter value must not be null.");
+      if (value != null) {
+        builder.putExtras(value);
       }
-
-      builder.putExtras(value);
     }
   }
 }

@@ -7,12 +7,12 @@ package com.anbillon.routine;
  */
 public interface Interceptor {
 
-  Router intercept(Chain chain);
+  Router intercept(Chain chain) throws RoutineException;
 
   interface Chain {
 
     Router router();
 
-    Router proceed(Router router);
+    Router proceed(Router router) throws RoutineException;
   }
 }
