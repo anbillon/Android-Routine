@@ -124,7 +124,7 @@ Routine routine = new Routine.Builder().addFilter(new SchemeFilter()).build()
 ``` java
 public final class RoutineAuthInterceptor implements Interceptor {
 
-  @Override public Router intercept(Chain chain) {
+  @Override public Router intercept(Chain chain) throws RoutineException {
     Router router = chain.router();
     RouterCall.Builder builder = router.newBuilder();
    /* your authentication logic here */

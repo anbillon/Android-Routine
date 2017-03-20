@@ -16,20 +16,18 @@ import static android.content.Intent.CATEGORY_BROWSABLE;
  */
 final class BridgeInterceptor implements Interceptor {
 
-  @Override public Router intercept(Chain chain) {
+  @Override public Router intercept(Chain chain) throws RoutineException {
     Router router = chain.router();
     Router.Builder builder = router.newBuilder();
-    String schemeUrl = router.schemeUrl();
+    String target = router.target();
     Intent intent = router.intent();
     Context context = router.context();
-    Class<?> page = router.page();
-    String pageName = router.pageName();
 
     /* check the method to build intent */
     switch (router.method()) {
       case SCHEME_URL:
         try {
-          Uri uri = Intent.parseUri(schemeUrl, 0).getData();
+          Uri uri = Intent.parseUri(target, 0).getData();
           intent.setAction(ACTION_VIEW)
               .setData(uri)
               .addCategory(CATEGORY_BROWSABLE)
@@ -42,14 +40,11 @@ final class BridgeInterceptor implements Interceptor {
         break;
 
       case PAGE_NAME:
+      case PAGE:
         try {
-          intent.setClass(context, Class.forName(pageName));
+          intent.setClass(context, Class.forName(target));
         } catch (ClassNotFoundException ignore) {
         }
-        break;
-
-      case PAGE:
-        intent.setClass(context, page);
         break;
 
       default:

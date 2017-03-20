@@ -15,7 +15,7 @@ import static com.anbillon.routine.Utils.resolveActivityInfo;
  */
 final class RealInterceptor implements Interceptor {
 
-  @Override public Router intercept(Chain chain) {
+  @Override public Router intercept(Chain chain) throws RoutineException {
     Router router = chain.router();
     Context context = router.context();
     Intent intent = router.intent();
@@ -31,9 +31,7 @@ final class RealInterceptor implements Interceptor {
 
   private Intent replaceWithErrorPage(Context context, Intent origin, Class<?> errorPage) {
     if (errorPage == null) {
-      Intent intent =
-          context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
-      return intent == null ? origin : intent;
+      return origin;
     }
 
     return origin.setClass(context, errorPage)

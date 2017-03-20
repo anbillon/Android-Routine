@@ -2,11 +2,16 @@ package com.anbillon.routine.adapter.rxjava;
 
 import com.anbillon.routine.Adapter;
 import com.anbillon.routine.Router;
+import com.anbillon.routine.RouterCall;
+import com.anbillon.routine.RoutineException;
 import java.lang.reflect.Type;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Scheduler;
 import rx.Subscriber;
+import rx.exceptions.CompositeException;
+import rx.exceptions.Exceptions;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * @author Vincent Cheung (coolingfall@gmail.com)
@@ -29,12 +34,12 @@ final class RxJavaAdapter implements Adapter<Object> {
     return callType;
   }
 
-  @Override public Object adapt(Router router) {
-    OnSubscribe<?> func = new VoidOnSubscribe(router);
+  @Override public Object adapt(RouterCall call) {
+    OnSubscribe<?> func = new VoidOnSubscribe(call);
     if (callType == Boolean.class) {
-      func = new BooleanOnSubcribe(router);
+      func = new BooleanOnSubcribe(call);
     } else if (callType == Router.class) {
-      func = new RouterOnSubscribe(router);
+      func = new RouterOnSubscribe(call);
     }
     Observable<?> observable = Observable.create(func);
 
@@ -64,41 +69,72 @@ final class RxJavaAdapter implements Adapter<Object> {
   }
 
   final class RouterOnSubscribe implements OnSubscribe<Router> {
-    private final Router router;
+    private final RouterCall call;
 
-    RouterOnSubscribe(Router router) {
-      this.router = router;
+    RouterOnSubscribe(RouterCall call) {
+      this.call = call;
     }
 
     @Override public void call(Subscriber<? super Router> subscriber) {
-      subscriber.onNext(router);
+      try {
+        subscriber.onNext(call.router());
+      } catch (RoutineException e) {
+        try {
+          subscriber.onError(e);
+        } catch (Throwable inner) {
+          Exceptions.throwIfFatal(inner);
+          CompositeException composite = new CompositeException(e, inner);
+          RxJavaPlugins.getInstance().getErrorHandler().handleError(composite);
+        }
+      }
       subscriber.onCompleted();
     }
   }
 
   final class BooleanOnSubcribe implements OnSubscribe<Boolean> {
-    private final Router router;
+    private final RouterCall call;
 
-    BooleanOnSubcribe(Router router) {
-      this.router = router;
+    BooleanOnSubcribe(RouterCall call) {
+      this.call = call;
     }
 
     @Override public void call(Subscriber<? super Boolean> subscriber) {
-      subscriber.onNext(router.start());
+      try {
+        subscriber.onNext(call.execute());
+      } catch (RoutineException e) {
+        try {
+          subscriber.onError(e);
+        } catch (Throwable inner) {
+          Exceptions.throwIfFatal(inner);
+          CompositeException composite = new CompositeException(e, inner);
+          RxJavaPlugins.getInstance().getErrorHandler().handleError(composite);
+        }
+      }
       subscriber.onCompleted();
     }
   }
 
   final class VoidOnSubscribe implements OnSubscribe<Void> {
-    private final Router router;
+    private final RouterCall call;
 
-    VoidOnSubscribe(Router router) {
-      this.router = router;
+    VoidOnSubscribe(RouterCall call) {
+      this.call = call;
     }
 
     @Override public void call(Subscriber<? super Void> subscriber) {
-      router.start();
-      subscriber.onNext(null);
+      try {
+        call.execute();
+        subscriber.onNext(null);
+      } catch (RoutineException e) {
+        try {
+          subscriber.onError(e);
+        } catch (Throwable inner) {
+          Exceptions.throwIfFatal(inner);
+          CompositeException composite = new CompositeException(e, inner);
+          RxJavaPlugins.getInstance().getErrorHandler().handleError(composite);
+        }
+      }
+
       subscriber.onCompleted();
     }
   }

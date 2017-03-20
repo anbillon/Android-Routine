@@ -23,7 +23,7 @@ final class InterceptorChain implements Interceptor.Chain {
     return router;
   }
 
-  @Override public Router proceed(Router router) {
+  @Override public Router proceed(Router router) throws RoutineException {
     if (router == null) {
       throw new IllegalArgumentException("Router in interceptor chain must not be null.");
     }

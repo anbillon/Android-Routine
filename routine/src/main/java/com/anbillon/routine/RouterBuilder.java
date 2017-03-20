@@ -18,10 +18,7 @@ import static com.anbillon.routine.Utils.getExtraRawType;
 final class RouterBuilder {
   private final Intent intent;
   private Method method;
-  private String destination;
-  private String schemeUrl;
-  private String pageName;
-  private Class<?> page;
+  private String target;
   private Class<?> errorPage;
   private Resolver resolver;
   private int requestCode = -1;
@@ -39,20 +36,18 @@ final class RouterBuilder {
    * @param schemeUrl scheme url
    */
   void schemeUrl(String schemeUrl) {
-    this.schemeUrl = schemeUrl;
     this.method = Method.SCHEME_URL;
-    this.destination = schemeUrl;
+    this.target = schemeUrl;
   }
 
   /**
-   * Add page destination into current builder if existed.
+   * Add page target into current builder if existed.
    *
    * @param pageName page pageName
    */
   void pageName(String pageName) {
-    this.pageName = pageName;
     this.method = Method.PAGE_NAME;
-    this.destination = pageName;
+    this.target = pageName;
   }
 
   /**
@@ -61,9 +56,8 @@ final class RouterBuilder {
    * @param page page
    */
   void page(Class<?> page) {
-    this.page = page;
     this.method = Method.PAGE;
-    this.destination = page.getCanonicalName();
+    this.target = page.getCanonicalName();
   }
 
   /**
@@ -112,7 +106,7 @@ final class RouterBuilder {
   /**
    * Put extended data into {@link Intent}.
    *
-   * @param name destination of extra
+   * @param name target of extra
    * @param type parameter type
    * @param value value to add
    * @param <T> type of @{code value}
@@ -201,10 +195,7 @@ final class RouterBuilder {
 
   Router build() {
     return new Router.Builder().method(method)
-        .destination(destination)
-        .schemeUrl(schemeUrl)
-        .pageName(pageName)
-        .page(page)
+        .target(target)
         .errorPage(errorPage)
         .resolver(resolver)
         .intent(intent)

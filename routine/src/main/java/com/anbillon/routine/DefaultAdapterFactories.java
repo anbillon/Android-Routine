@@ -27,8 +27,11 @@ final class DefaultAdapterFactories extends Adapter.Factory {
       return void.class;
     }
 
-    @Override public Void adapt(Router router) {
-      router.start();
+    @Override public Void adapt(RouterCall call) {
+      try {
+        call.execute();
+      } catch (RoutineException ignore) {
+      }
       return null;
     }
   }
@@ -38,8 +41,12 @@ final class DefaultAdapterFactories extends Adapter.Factory {
       return boolean.class;
     }
 
-    @Override public Boolean adapt(Router router) {
-      return router.start();
+    @Override public Boolean adapt(RouterCall call) {
+      try {
+        return call.execute();
+      } catch (RoutineException e) {
+        return false;
+      }
     }
   }
 
@@ -48,8 +55,12 @@ final class DefaultAdapterFactories extends Adapter.Factory {
       return Router.class;
     }
 
-    @Override public Router adapt(Router router) {
-      return router;
+    @Override public Router adapt(RouterCall call) {
+      try {
+        return call.router();
+      } catch (RoutineException e) {
+        return null;
+      }
     }
   }
 }

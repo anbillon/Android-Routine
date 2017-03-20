@@ -19,9 +19,9 @@ public interface Adapter<T> {
   Type callType();
 
   /**
-   * Returns an instance of {@code T} which delegates to {@code router}.
+   * Returns an instance of {@code T} which delegates to {@code call}.
    */
-  T adapt(Router router);
+  T adapt(RouterCall call);
 
   /**
    * Creates {@link Adapter} instances based on the return type of {@linkplain

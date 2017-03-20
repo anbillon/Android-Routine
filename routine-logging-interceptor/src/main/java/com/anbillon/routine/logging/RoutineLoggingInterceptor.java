@@ -1,11 +1,11 @@
 package com.anbillon.routine.logging;
 
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import com.anbillon.routine.Interceptor;
 import com.anbillon.routine.Router;
+import com.anbillon.routine.RoutineException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -39,18 +39,17 @@ public final class RoutineLoggingInterceptor implements Interceptor {
     return this;
   }
 
-  @Override public Router intercept(Chain chain) {
+  @Override public Router intercept(Chain chain) throws RoutineException {
     Router router = chain.router();
 
     if (level == Level.NONE) {
       return chain.proceed(router);
     }
 
-    logger.log("-->" + ' ' + router.method() + ' ' + router.destination());
+    logger.log("-->" + ' ' + router.method() + ' ' + router.target());
     logger.log("From: " + router.origin());
-    ActivityInfo activityInfo =
-        router.intent().resolveActivityInfo(router.context().getPackageManager(), 0);
-    logger.log("To: " + (activityInfo != null ? activityInfo.name : "No destination page found"));
+    String destination = router.destination();
+    logger.log("To: " + (destination != null ? destination : "No destination page found"));
     if (router.intent().getFlags() > 0) {
       logger.log("Flags: " + "0x" + Integer.toHexString(router.intent().getFlags()));
     }

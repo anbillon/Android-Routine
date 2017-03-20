@@ -23,7 +23,7 @@ import static com.anbillon.routine.Utils.checkNotNull;
  *      .errorPage(ErrorActivity.class)
  *      .build();
  *
- *  MyRouter router = routine.create(MyRouter.class);
+ *  MyRouter router = routine.router(MyRouter.class);
  *  router.navigateToDemo(contex);
  * </code></pre>
  * </p>
@@ -52,7 +52,7 @@ public final class Routine {
    * The navigate type for a given method is obtained origin an annotation on the method
    * describing the request type. The built-in methods are {@link com.anbillon.routine.app.SchemeUrl
    * SchemeUrl}, {@link com.anbillon.routine.app.PageName PageName} and {@link
-   * com.anbillon.routine.app.Page Page}. For a dynamic shceme url, omit the path on the
+   * com.anbillon.routine.app.Page Page}. For a dynamic shceme url, omit the target on the
    * annotation and annotate the parameter with {@link com.anbillon.routine.app.SchemeUrl
    * SchemeUrl}. If no annotations on method and no SchemeUrl on parameter, exception will occur.
    * <p>
@@ -86,7 +86,7 @@ public final class Routine {
 
             RouterMethod routerMethod = loadRouterMethod(method);
             RouterCall routerCall = new RouterCall<>(routerMethod, interceptors, filters, args);
-            return routerMethod.adapter.adapt(routerCall.create());
+            return routerMethod.adapter.adapt(routerCall);
           }
         });
   }
@@ -128,7 +128,7 @@ public final class Routine {
       }
     }
 
-    throw new IllegalArgumentException("No resolver found, resolver type is not supported.");
+    throw new IllegalArgumentException("No resolver found, caller type is not supported.");
   }
 
   /**

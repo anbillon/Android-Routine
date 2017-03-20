@@ -14,13 +14,13 @@ final class FiltersInterceptor implements Interceptor {
     this.matcher = matcher;
   }
 
-  @Override public Router intercept(Chain chain) {
+  @Override public Router intercept(Chain chain) throws RoutineException {
     Router router = chain.router();
     if (router.method() != Method.SCHEME_URL) {
       return chain.proceed(router);
     }
 
-    Intent intent = matcher.match(router.context(), router.schemeUrl());
+    Intent intent = matcher.match(router.context(), router.target());
     if (intent == null) {
       return chain.proceed(router);
     }

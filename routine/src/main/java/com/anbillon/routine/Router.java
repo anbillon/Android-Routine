@@ -3,9 +3,11 @@ package com.anbillon.routine;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.anbillon.routine.Utils.checkNotNull;
+import static com.anbillon.routine.Utils.resolveActivityInfo;
 
 /**
  * A router. Instances of this class are immutable.
@@ -14,10 +16,7 @@ import static com.anbillon.routine.Utils.checkNotNull;
  */
 public final class Router {
   private final Method method;
-  private final String destination;
-  private final String schemeUrl;
-  private final String pageName;
-  private final Class<?> page;
+  private final String target;
   private final Class<?> errorPage;
   private final Resolver resolver;
   private final Intent intent;
@@ -27,10 +26,7 @@ public final class Router {
 
   private Router(Builder builder) {
     this.method = builder.method;
-    this.destination = builder.target;
-    this.schemeUrl = builder.schemeUrl;
-    this.pageName = builder.pageName;
-    this.page = builder.page;
+    this.target = builder.target;
     this.errorPage = builder.errorPage;
     this.resolver = builder.resolver;
     this.intent = checkNotNull(builder.intent, "intent == null in Router");
@@ -63,24 +59,17 @@ public final class Router {
     return method;
   }
 
+  public String target() {
+    return target;
+  }
+
   public String origin() {
     return resolver.callerName();
   }
 
   public String destination() {
-    return destination;
-  }
-
-  String schemeUrl() {
-    return schemeUrl;
-  }
-
-  String pageName() {
-    return pageName;
-  }
-
-  Class<?> page() {
-    return page;
+    ActivityInfo activityInfo = resolveActivityInfo(resolver.context(), intent());
+    return activityInfo == null ? null : activityInfo.name;
   }
 
   Class<?> errorPage() {
@@ -106,9 +95,6 @@ public final class Router {
   public static final class Builder {
     private Method method;
     private String target;
-    private String schemeUrl;
-    private String pageName;
-    private Class<?> page;
     private Class<?> errorPage;
     private Resolver resolver;
     private Intent intent;
@@ -121,10 +107,7 @@ public final class Router {
 
     Builder(Router router) {
       this.method = router.method;
-      this.target = router.destination;
-      this.schemeUrl = router.schemeUrl;
-      this.pageName = router.pageName;
-      this.page = router.page;
+      this.target = router.target;
       this.errorPage = router.errorPage;
       this.resolver = router.resolver;
       this.intent = router.intent;
@@ -138,23 +121,8 @@ public final class Router {
       return this;
     }
 
-    Builder destination(String destination) {
-      this.target = destination;
-      return this;
-    }
-
-    Builder schemeUrl(String schemeUrl) {
-      this.schemeUrl = schemeUrl;
-      return this;
-    }
-
-    Builder pageName(String pageName) {
-      this.pageName = pageName;
-      return this;
-    }
-
-    Builder page(Class<?> page) {
-      this.page = page;
+    Builder target(String target) {
+      this.target = target;
       return this;
     }
 
