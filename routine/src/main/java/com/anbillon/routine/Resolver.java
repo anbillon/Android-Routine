@@ -41,7 +41,7 @@ public interface Resolver {
    */
   abstract class Factory {
     /**
-     * Returns a {@link Resolver} to resovle the caller.
+     * Returns a {@link Resolver} to resolve the caller.
      */
     protected <T> Resolver create(T caller) {
       return null;

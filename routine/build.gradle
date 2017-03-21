@@ -14,6 +14,8 @@ android {
   }
 
   dependencies {
+    provided rootProject.ext.supportAnnotations
+
     testCompile rootProject.ext.junit
     testCompile rootProject.ext.robolectric
   }

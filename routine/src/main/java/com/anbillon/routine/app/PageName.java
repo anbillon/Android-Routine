@@ -28,7 +28,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p>
  * For example:
  * <pre><code>
- * {@code} @PageName("com.exmaple.DemoActivity")
+ * {@code} @PageName("com.example.DemoActivity")
  * {@code} void navigateToDemo();
  * </code></pre>
  * </p>

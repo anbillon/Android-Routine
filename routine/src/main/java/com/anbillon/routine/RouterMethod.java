@@ -238,7 +238,7 @@ final class RouterMethod<T> {
         }
       }
 
-      /* no annotation paramater */
+      /* no annotation parameter */
       return null;
     }
 
