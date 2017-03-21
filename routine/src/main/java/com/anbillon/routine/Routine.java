@@ -40,7 +40,7 @@ import static com.anbillon.routine.Utils.checkNotNull;
  *      .build();
  *
  *  MyRouter router = routine.router(MyRouter.class);
- *  router.navigateToDemo(contex);
+ *  router.navigateToDemo(context);
  * </code></pre>
  * </p>
  *

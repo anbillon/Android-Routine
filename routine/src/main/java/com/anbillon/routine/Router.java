@@ -20,6 +20,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.support.annotation.Nullable;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.anbillon.routine.Utils.checkNotNull;
@@ -81,7 +82,7 @@ public final class Router {
   }
 
   /**
-   * The target of this router, it will be a page nanme or scheme url.
+   * The target of this router, it will be a page name or scheme url.
    */
   public String target() {
     return target;
@@ -97,7 +98,7 @@ public final class Router {
   /**
    * Destination page. This means the available destination page, maybe null.
    */
-  public String destination() {
+  @Nullable public String destination() {
     ActivityInfo activityInfo = resolveActivityInfo(resolver.context(), intent());
     return activityInfo == null ? null : activityInfo.name;
   }

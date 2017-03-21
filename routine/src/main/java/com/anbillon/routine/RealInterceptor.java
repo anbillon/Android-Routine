@@ -24,7 +24,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.anbillon.routine.Utils.resolveActivityInfo;
 
 /**
- * A Routine interceptor which checks if the {@link Intent} is avaliable. This will be the final
+ * A Routine interceptor which checks if the {@link Intent} is available. This will be the final
  * interceptor and return real router.
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
