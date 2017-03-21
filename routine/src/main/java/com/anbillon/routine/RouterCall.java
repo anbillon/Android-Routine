@@ -1,10 +1,26 @@
+/*
+ * Copyright (C) 2017 Tourbillon Group
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.anbillon.routine;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A router call which creates the router or invokes the router.
+ * A router call which creates the router and invokes the router.
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
  */
@@ -22,10 +38,18 @@ public final class RouterCall<T> {
     this.args = args;
   }
 
+  /**
+   * Execute this router call.
+   *
+   * @return true if successfully, otherwise return false
+   */
   public boolean execute() throws RoutineException {
     return router().start();
   }
 
+  /**
+   * Crreate a {@link Router} from router interface.
+   */
   public Router router() throws RoutineException {
     Router originRouter = routerMethod.toRouter(args);
 

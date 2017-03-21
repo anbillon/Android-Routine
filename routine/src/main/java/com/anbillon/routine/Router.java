@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Tourbillon Group
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.anbillon.routine;
 
 import android.content.ActivityNotFoundException;
@@ -55,18 +71,32 @@ public final class Router {
     return true;
   }
 
+  /**
+   * Routine supports three {@link Method}.
+   *
+   * @return {@link Method}
+   */
   public Method method() {
     return method;
   }
 
+  /**
+   * The target of this router, it will be a page nanme or scheme url.
+   */
   public String target() {
     return target;
   }
 
+  /**
+   * Origin page. Generally it's the name of caller.
+   */
   public String origin() {
     return resolver.callerName();
   }
 
+  /**
+   * Destination page. This means the available destination page, maybe null.
+   */
   public String destination() {
     ActivityInfo activityInfo = resolveActivityInfo(resolver.context(), intent());
     return activityInfo == null ? null : activityInfo.name;
@@ -76,14 +106,23 @@ public final class Router {
     return errorPage;
   }
 
+  /**
+   * Get {@link Context} this router uses.
+   */
   public Context context() {
     return resolver.context();
   }
 
+  /**
+   * Get full {@link Intent} this router creates.
+   */
   public Intent intent() {
     return intent;
   }
 
+  /**
+   * Get request code for this router.
+   */
   public int requestCode() {
     return requestCode;
   }
