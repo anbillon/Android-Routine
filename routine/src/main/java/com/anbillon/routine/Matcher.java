@@ -18,6 +18,7 @@ package com.anbillon.routine;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -44,7 +45,7 @@ public final class Matcher {
    * @param schemeUrl scheme url
    * @return {@link Intent} if matched, otherwise return null.
    */
-  public Intent match(Context context, String schemeUrl) {
+  @Nullable public Intent match(Context context, String schemeUrl) {
     Set<Class<?>> pages = null;
     for (String key : pagesMap.keySet()) {
       if (schemeUrl.contains(key)) {
@@ -83,7 +84,7 @@ public final class Matcher {
     public Builder addPage(String schemeUrl, Class<?> page) {
       String realSchemeUrl = resolveSchemeUrl(schemeUrl);
       Set<Class<?>> pages = pagesMap.get(realSchemeUrl);
-      if (pages != null && !pages.isEmpty()) {
+      if (pages != null) {
         pages.add(page);
       } else {
         LinkedHashSet<Class<?>> newPages = new LinkedHashSet<>();

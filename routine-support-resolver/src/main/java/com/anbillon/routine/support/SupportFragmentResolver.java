@@ -19,6 +19,8 @@ package com.anbillon.routine.support;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import com.anbillon.routine.Resolver;
 
@@ -44,20 +46,23 @@ final class SupportFragmentResolver implements Resolver {
 
   @Override public void startActivity(Intent intent, int enterAnim, int exitAnim)
       throws ActivityNotFoundException {
-    fragment.startActivity(intent);
-    if (enterAnim == 0 && exitAnim == 0) {
-      return;
-    }
-    fragment.getActivity().overridePendingTransition(enterAnim, exitAnim);
+    fragment.startActivity(intent, options(enterAnim, exitAnim));
   }
 
   @Override
   public void startActivityForResult(Intent intent, int requestCode, int enterAnim, int exitAnim)
       throws ActivityNotFoundException {
-    fragment.startActivityForResult(intent, requestCode);
-    if (enterAnim == 0 && exitAnim == 0) {
-      return;
+    fragment.startActivityForResult(intent, requestCode, options(enterAnim, exitAnim));
+  }
+
+  private Bundle options(int enterAnim, int exitAnim) {
+    Bundle options = null;
+    if (enterAnim != 0 || exitAnim != 0) {
+      ActivityOptionsCompat activityOptionsCompat =
+          ActivityOptionsCompat.makeCustomAnimation(context(), enterAnim, exitAnim);
+      options = activityOptionsCompat.toBundle();
     }
-    fragment.getActivity().overridePendingTransition(enterAnim, exitAnim);
+
+    return options;
   }
 }

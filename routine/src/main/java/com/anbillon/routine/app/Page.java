@@ -40,5 +40,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
   /**
    * The value of page.
    */
-  Class<?> value();
+  Class<?> value() default Void.class;
 }

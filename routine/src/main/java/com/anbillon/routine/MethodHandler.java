@@ -89,6 +89,18 @@ abstract class MethodHandler<T> {
     }
   }
 
+  static final class RequestCode extends MethodHandler<Integer> {
+    public RequestCode(Integer value) {
+      super(value);
+    }
+
+    @Override void apply(RouterBuilder builder) throws IllegalArgumentException {
+      if (value != null) {
+        builder.requestCode(value);
+      }
+    }
+  }
+
   static final class Anim extends MethodHandler<Integer> {
     private final Integer exit;
 

@@ -76,4 +76,12 @@ public interface Navigator {
    * @param url dynamic shceme url
    */
   void navigateWithDynamicSchemeUrl(@Caller Context context, @SchemeUrl String url);
+
+  /**
+   * Navigate with dynamic page name.
+   *
+   * @param fragment fragment to use
+   * @param pageName page name
+   */
+  void navigateWithDynamicPageName(@Caller Fragment fragment, @PageName String pageName);
 }
