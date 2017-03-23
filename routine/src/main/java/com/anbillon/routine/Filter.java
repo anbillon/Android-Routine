@@ -17,7 +17,7 @@
 package com.anbillon.routine;
 
 /**
- * Typically filters add, remove rules on matcher.
+ * Typically filters add rules on matcher.
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
  */

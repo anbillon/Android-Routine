@@ -35,6 +35,14 @@
       />
 
   <Button
+      android:id="@+id/btn_dynamic_page_name"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/with_dynamic_page_name"
+      android:textAllCaps="false"
+      />
+
+  <Button
       android:id="@+id/btn_scheme_filter"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"

@@ -100,9 +100,7 @@ Routine routine = new Routine.Builder().addFilter(new SchemeFilter()).build()
 @SuppressWarnings("deprecation") private class HtmlClient extends WebViewClient {
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP) @Override
   public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-    String host = request.getUrl().getHost();
-    if (!"HTTP".equals(host) && !"HTTPS".equals(host)) {
-      navigator.navigateWithDynamicSchemeUrl(context, request.getUrl().toString());
+    if (navigator.navigateWithDynamicSchemeUrl(context, request.getUrl().toString())) {
       return true;
     } else {
       return super.shouldOverrideUrlLoading(view, request);
@@ -110,9 +108,7 @@ Routine routine = new Routine.Builder().addFilter(new SchemeFilter()).build()
   }
 
   @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
-    String host = Uri.parse(url).getHost();
-    if (!"HTTP".equals(host) && !"HTTPS".equals(host)) {
-      navigator.navigateWithDynamicSchemeUrl(context, url);
+    if (navigator.navigateWithDynamicSchemeUrl(context, url)) {
       return true;
     } else {
       return super.shouldOverrideUrlLoading(view, url);

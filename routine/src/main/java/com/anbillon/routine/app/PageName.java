@@ -21,6 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
@@ -37,7 +38,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @see SchemeUrl
  * @see Page
  */
-@Documented @Target(METHOD) @Retention(RUNTIME) public @interface PageName {
+@Documented @Target({ METHOD, PARAMETER }) @Retention(RUNTIME) public @interface PageName {
   /**
    * The value of page destination.
    */
