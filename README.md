@@ -122,11 +122,11 @@ public final class RoutineAuthInterceptor implements Interceptor {
 
   @Override public Router intercept(Chain chain) throws RoutineException {
     Router router = chain.router();
-    RouterCall.Builder builder = router.newBuilder();
-   /* your authentication logic here */
-   if (random(3) == 0) {
-      Intent intent = new Intent(call.context(), LoginActivity.class);
-      builder.intent(intent).requestCode(-1);
+    Router.Builder builder = router.newBuilder();
+    /* your authentication logic here */
+    if (random(3) == 0) {
+    Intent intent = new Intent(call.context(), LoginActivity.class);
+    builder.intent(intent).requestCode(-1);
     }
 
     return chain.proceed(builder.build());
