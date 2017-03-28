@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-
 android {
   compileSdkVersion rootProject.ext.compileSdkVersion
   buildToolsVersion rootProject.ext.buildToolsVersion
@@ -7,7 +6,6 @@ android {
   defaultConfig {
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
-    consumerProguardFiles 'proguard-rules.pro'
   }
 
   lintOptions {
@@ -15,7 +13,8 @@ android {
   }
 
   dependencies {
-    provided rootProject.ext.supportAnnotations
+    provided project(':routine')
+    provided rootProject.ext.rxJava2
 
     testCompile rootProject.ext.junit
     testCompile rootProject.ext.robolectric
