@@ -34,7 +34,6 @@ import static com.anbillon.routine.Utils.resolveActivityInfo;
 public final class Router {
   private final Method method;
   private final String target;
-  private final Class<?> errorPage;
   private final Resolver resolver;
   private final Intent intent;
   private final int requestCode;
@@ -44,7 +43,6 @@ public final class Router {
   private Router(Builder builder) {
     this.method = builder.method;
     this.target = builder.target;
-    this.errorPage = builder.errorPage;
     this.resolver = builder.resolver;
     this.intent = checkNotNull(builder.intent, "intent == null in Router");
     this.requestCode = builder.requestCode;
@@ -55,7 +53,7 @@ public final class Router {
   /**
    * Start current router to open new page.
    *
-   * @return ture if open successfully, otherwise return false
+   * @return true if open successfully, otherwise return false
    */
   public boolean start() {
     try {
@@ -103,10 +101,6 @@ public final class Router {
     return activityInfo == null ? null : activityInfo.name;
   }
 
-  Class<?> errorPage() {
-    return errorPage;
-  }
-
   /**
    * Get {@link Context} this router uses.
    */
@@ -135,7 +129,6 @@ public final class Router {
   public static final class Builder {
     private Method method;
     private String target;
-    private Class<?> errorPage;
     private Resolver resolver;
     private Intent intent;
     private int requestCode;
@@ -148,7 +141,6 @@ public final class Router {
     Builder(Router router) {
       this.method = router.method;
       this.target = router.target;
-      this.errorPage = router.errorPage;
       this.resolver = router.resolver;
       this.intent = router.intent;
       this.requestCode = router.requestCode;
@@ -163,11 +155,6 @@ public final class Router {
 
     Builder target(String target) {
       this.target = target;
-      return this;
-    }
-
-    Builder errorPage(Class<?> errorPage) {
-      this.errorPage = errorPage;
       return this;
     }
 

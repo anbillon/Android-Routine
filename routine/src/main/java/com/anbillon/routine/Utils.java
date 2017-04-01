@@ -131,9 +131,9 @@ final class Utils {
 
     Class<?>[] interfaces = ((Class<?>) type).getInterfaces();
     if (interfaces.length != 0) {
-      for (Class<?> ininterfaceClazz : interfaces) {
-        if (isSerializableType(ininterfaceClazz)) {
-          return ininterfaceClazz;
+      for (Class<?> interfaceClazz : interfaces) {
+        if (isSerializableType(interfaceClazz)) {
+          return interfaceClazz;
         }
       }
     }

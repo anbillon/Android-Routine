@@ -24,5 +24,6 @@ package com.anbillon.routine;
 public enum Method {
   SCHEME_URL,
   PAGE_NAME,
-  PAGE;
+  PAGE,
+  ACTION
 }

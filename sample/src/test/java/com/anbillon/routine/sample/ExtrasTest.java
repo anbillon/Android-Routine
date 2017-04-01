@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import com.anbillon.routine.Routine;
 import com.anbillon.routine.logging.RoutineLoggingInterceptor;
-import com.anbillon.routine.sample.ui.ErrorActivity;
 import com.anbillon.routine.sample.ui.MainActivity;
 import java.util.ArrayList;
 import org.junit.Before;
@@ -35,9 +34,7 @@ public final class ExtrasTest {
     context = ShadowApplication.getInstance().getApplicationContext();
     mainActivity = Robolectric.setupActivity(MainActivity.class);
     Routine routine = new Routine.Builder().addInterceptor(
-        new RoutineLoggingInterceptor().setLevel(RoutineLoggingInterceptor.Level.ALL))
-        .errorPage(ErrorActivity.class)
-        .build();
+        new RoutineLoggingInterceptor().setLevel(RoutineLoggingInterceptor.Level.ALL)).build();
     navigator = routine.create(ExtraNavigator.class);
   }
 

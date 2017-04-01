@@ -17,6 +17,7 @@
 package com.anbillon.routine;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import java.io.Serializable;
@@ -35,14 +36,12 @@ final class RouterBuilder {
   private final Intent intent;
   private Method method;
   private String target;
-  private Class<?> errorPage;
   private Resolver resolver;
   private int requestCode = -1;
   private int enterAnim;
   private int exitAnim;
 
-  RouterBuilder(Class<?> errorPage) {
-    this.errorPage = errorPage;
+  RouterBuilder() {
     this.intent = new Intent();
   }
 
@@ -77,6 +76,16 @@ final class RouterBuilder {
   }
 
   /**
+   * Add action into current builder.
+   *
+   * @param action action
+   */
+  void action(String action) {
+    this.method = Method.ACTION;
+    this.target = action;
+  }
+
+  /**
    * Add flags into current builder if existed.
    *
    * @param flags flags
@@ -93,8 +102,8 @@ final class RouterBuilder {
   /**
    * Add animation resource id into builder.
    *
-   * @param enterAnim enter animationn resource id
-   * @param exitAnim exit animationn resource id
+   * @param enterAnim enter animation resource id
+   * @param exitAnim exit animation resource id
    */
   void anim(int enterAnim, int exitAnim) {
     this.enterAnim = enterAnim;
@@ -176,8 +185,8 @@ final class RouterBuilder {
           intent.putIntegerArrayListExtra(name, (ArrayList<Integer>) value);
         } else if (actualTypeArgument instanceof Class<?>) {
           Class<?>[] interfaces = ((Class<?>) actualTypeArgument).getInterfaces();
-          for (Class<?> ininterfaceClazz : interfaces) {
-            if (ininterfaceClazz == Parcelable.class) {
+          for (Class<?> interfaceClazz : interfaces) {
+            if (interfaceClazz == Parcelable.class) {
               intent.putParcelableArrayListExtra(name, (ArrayList<Parcelable>) value);
               return;
             }
@@ -204,6 +213,8 @@ final class RouterBuilder {
       intent.putExtras((Bundle) extras);
     } else if (extras instanceof Intent) {
       intent.putExtras((Intent) extras);
+    } else if (extras instanceof Uri) {
+      intent.setData((Uri) extras);
     } else {
       throw new IllegalArgumentException("Unsupported type");
     }
@@ -212,7 +223,6 @@ final class RouterBuilder {
   Router build() {
     return new Router.Builder().method(method)
         .target(target)
-        .errorPage(errorPage)
         .resolver(resolver)
         .intent(intent)
         .requestCode(requestCode)

@@ -48,7 +48,7 @@ public final class RouterCall<T> {
   }
 
   /**
-   * Crreate a {@link Router} from router interface.
+   * Create a {@link Router} from router interface.
    */
   public Router router() throws RoutineException {
     Router originRouter = routerMethod.toRouter(args);

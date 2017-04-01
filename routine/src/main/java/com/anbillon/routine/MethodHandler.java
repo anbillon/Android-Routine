@@ -101,6 +101,20 @@ abstract class MethodHandler<T> {
     }
   }
 
+  static final class Action extends MethodHandler<String> {
+    public Action(String value) {
+      super(value);
+    }
+
+    @Override void apply(RouterBuilder builder) throws IllegalArgumentException {
+      if (value == null) {
+        throw new IllegalArgumentException("Flags value must not be null.");
+      }
+
+      builder.action(value);
+    }
+  }
+
   static final class Anim extends MethodHandler<Integer> {
     private final Integer exit;
 

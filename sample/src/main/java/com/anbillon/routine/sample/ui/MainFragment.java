@@ -15,6 +15,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static com.anbillon.routine.sample.Navigator.BROWSER;
+
 /**
  * @author Vincent Cheung (coolingfall@gmail.com)
  */
@@ -57,6 +59,10 @@ public final class MainFragment extends Fragment implements View.OnClickListener
 
       case R.id.btn_page:
         navigator.navigateToDemoWithPage(this).start();
+        break;
+
+      case R.id.btn_action:
+        navigator.navigateWithAction(this, BROWSER);
         break;
 
       case R.id.btn_dynamic_page_name:

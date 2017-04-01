@@ -17,7 +17,9 @@
 package com.anbillon.routine;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import com.anbillon.routine.app.Action;
 import com.anbillon.routine.app.Anim;
 import com.anbillon.routine.app.Caller;
 import com.anbillon.routine.app.Extra;
@@ -42,18 +44,16 @@ import static com.anbillon.routine.Utils.hasUnresolvableType;
 final class RouterMethod<T> {
   private final MethodHandler<?>[] methodHandlers;
   private final ParameterHandler<?>[] parameterHandlers;
-  private final Class<?> errorPage;
   final Adapter<T> adapter;
 
   RouterMethod(Builder<T> builder) {
     this.methodHandlers = builder.methodHandlers;
     this.parameterHandlers = builder.parameterHandlers;
     this.adapter = builder.adapter;
-    this.errorPage = builder.routine.errorPage();
   }
 
   Router toRouter(Object... args) throws IllegalArgumentException {
-    RouterBuilder routerBuilder = new RouterBuilder(errorPage);
+    RouterBuilder routerBuilder = new RouterBuilder();
 
     for (MethodHandler<?> handler : methodHandlers) {
       handler.apply(routerBuilder);
@@ -88,6 +88,7 @@ final class RouterMethod<T> {
     boolean gotCaller;
     boolean gotSchemeUrl;
     boolean gotPageName;
+    boolean gotAction;
     boolean gotRequestCode;
     boolean gotExtraSet;
     ParameterHandler<?>[] parameterHandlers;
@@ -140,7 +141,7 @@ final class RouterMethod<T> {
 
       if (methodHandlers.length == 0 && !gotSchemeUrl && !gotPageName) {
         throw methodError(
-            "Routine method annotation is required (@SchemeUrl, @Page or @PageName).");
+            "Routine method annotation is required (@SchemeUrl, @Page, @PageName or @Action).");
       }
 
       if (!gotCaller) {
@@ -174,13 +175,15 @@ final class RouterMethod<T> {
         return new MethodHandler.PageName(((PageName) annotation).value());
       } else if (annotation instanceof Page) {
         return new MethodHandler.Page(((Page) annotation).value());
+      } else if (annotation instanceof Action) {
+        gotAction = true;
+        return new MethodHandler.Action(((Action) annotation).value());
       } else if (annotation instanceof Flags) {
         Flags flags = (Flags) annotation;
         return new MethodHandler.Flags(flags.value(), (flags.set()));
       } else if (annotation instanceof RequestCode) {
         gotRequestCode = true;
-        RequestCode requestCode = (RequestCode) annotation;
-        return new MethodHandler.RequestCode(requestCode.value());
+        return new MethodHandler.RequestCode(((RequestCode) annotation).value());
       } else if (annotation instanceof Anim) {
         Anim anim = (Anim) annotation;
         return new MethodHandler.Anim(anim.enter(), anim.exit());
@@ -248,11 +251,11 @@ final class RouterMethod<T> {
 
         gotExtraSet = true;
 
-        if (type == Bundle.class || type == Intent.class) {
+        if (type == Bundle.class || type == Intent.class || type == Uri.class) {
           return new ParameterHandler.ExtraSet<>();
         } else {
           throw parameterError(p,
-              "@ExtraSet must be android.os.Bundle or android.content.Intent type.");
+              "@ExtraSet must be android.os.Bundle, android.content.Intent or android.net.Uri type.");
         }
       }
 

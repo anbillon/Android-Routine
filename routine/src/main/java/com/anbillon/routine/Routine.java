@@ -52,14 +52,12 @@ public final class Routine {
   private final List<Filter> filters;
   private final List<Adapter.Factory> adapterFactories;
   private final List<Resolver.Factory> resolverFactories;
-  private final Class<?> errorPage;
 
   private Routine(Builder builder) {
     this.interceptors = Utils.immutableList(builder.interceptors);
     this.filters = Utils.immutableList(builder.filters);
     this.adapterFactories = Utils.immutableList(builder.adapterFactories);
     this.resolverFactories = Utils.immutableList(builder.resolverFactories);
-    this.errorPage = builder.errorPage;
   }
 
   /**
@@ -68,7 +66,7 @@ public final class Routine {
    * The navigate type for a given method is obtained origin an annotation on the method
    * describing the request type. The built-in methods are {@link com.anbillon.routine.app.SchemeUrl
    * SchemeUrl}, {@link com.anbillon.routine.app.PageName PageName} and {@link
-   * com.anbillon.routine.app.Page Page}. For a dynamic shceme url, omit the target on the
+   * com.anbillon.routine.app.Page Page}. For a dynamic scheme url, omit the target on the
    * annotation and annotate the parameter with {@link com.anbillon.routine.app.SchemeUrl
    * SchemeUrl}. If no annotations on method and no SchemeUrl on parameter, exception will occur.
    * <p>
@@ -118,8 +116,8 @@ public final class Routine {
   Adapter<?> adapter(Type returnType, Annotation[] annotations) {
     checkNotNull(returnType, "returnType == null");
     checkNotNull(annotations, "annotations == null");
-    for (int i = 0, count = adapterFactories.size(); i < count; i++) {
-      Adapter<?> adapter = adapterFactories.get(i).get(returnType, annotations, this);
+    for (Adapter.Factory adapterFactory : adapterFactories) {
+      Adapter<?> adapter = adapterFactory.get(returnType, annotations, this);
       if (adapter != null) {
         return adapter;
       }
@@ -136,8 +134,7 @@ public final class Routine {
    * @return {@link Resolver}
    */
   <T> Resolver resolver(T caller) {
-    for (int i = 0, count = resolverFactories.size(); i < count; i++) {
-      Resolver.Factory factory = resolverFactories.get(i);
+    for (Resolver.Factory factory : resolverFactories) {
       Resolver resolver = factory.create(caller);
       if (resolver != null) {
         return resolver;
@@ -145,15 +142,6 @@ public final class Routine {
     }
 
     throw new IllegalArgumentException("No resolver found, caller type is not supported.");
-  }
-
-  /**
-   * The error page to open when an error occured.
-   *
-   * @return error page clazz
-   */
-  Class<?> errorPage() {
-    return errorPage;
   }
 
   /**
@@ -184,7 +172,6 @@ public final class Routine {
     private List<Filter> filters = new ArrayList<>();
     private List<Adapter.Factory> adapterFactories = new ArrayList<>();
     private List<Resolver.Factory> resolverFactories = new ArrayList<>();
-    private Class<?> errorPage;
 
     public Builder() {
       adapterFactories.add(new DefaultAdapterFactories());
@@ -232,17 +219,6 @@ public final class Routine {
      */
     public Builder addFilter(Filter filter) {
       filters.add(filter);
-      return this;
-    }
-
-    /**
-     * Navigate to a error page when the given page is not found.
-     *
-     * @param errorPage error page
-     * @return this builder for further chaining
-     */
-    public Builder errorPage(Class<?> errorPage) {
-      this.errorPage = errorPage;
       return this;
     }
 
