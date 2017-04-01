@@ -63,6 +63,10 @@ final class BridgeInterceptor implements Interceptor {
         }
         break;
 
+      case ACTION:
+        intent.setAction(target);
+        break;
+
       default:
         break;
     }
