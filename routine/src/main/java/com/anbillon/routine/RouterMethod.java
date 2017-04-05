@@ -224,6 +224,16 @@ final class RouterMethod<T> {
         return new ParameterHandler.PageName();
       }
 
+      if (annotation instanceof Action) {
+        if (gotAction) {
+          throw parameterError(p, "Multiple @Action annotations found on method and parameter.");
+        }
+
+        gotAction = true;
+
+        return new ParameterHandler.Action();
+      }
+
       if (annotation instanceof RequestCode) {
         if (gotRequestCode) {
           throw parameterError(p,

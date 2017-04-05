@@ -62,6 +62,16 @@ abstract class ParameterHandler<T> {
     }
   }
 
+  static final class Action extends ParameterHandler<String> {
+    @Override void apply(RouterBuilder builder, String value) throws IllegalArgumentException {
+      if (value == null) {
+        throw new IllegalArgumentException("Action parameter value must not be null.");
+      }
+
+      builder.action(value);
+    }
+  }
+
   static final class RequestCode extends ParameterHandler<Integer> {
     @Override void apply(RouterBuilder builder, Integer value) throws IllegalArgumentException {
       if (value != null) {

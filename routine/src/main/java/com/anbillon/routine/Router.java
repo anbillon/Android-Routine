@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.support.annotation.Nullable;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.anbillon.routine.Utils.checkNotNull;
 import static com.anbillon.routine.Utils.resolveActivityInfo;
 
@@ -60,7 +59,6 @@ public final class Router {
       if (requestCode >= 0) {
         resolver.startActivityForResult(intent, requestCode, enterAnim, exitAnim);
       } else {
-        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
         resolver.startActivity(intent, enterAnim, exitAnim);
       }
     } catch (ActivityNotFoundException ignore) {

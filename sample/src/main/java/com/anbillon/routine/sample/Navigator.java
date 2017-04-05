@@ -26,7 +26,7 @@ import rx.Observable;
  */
 public interface Navigator {
   String EXTRA_ID = "com.anbillon.EXTRA_ID";
-  Uri PICK_IMAAGE = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+  Uri PICK_IMAGE = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
   Uri BROWSER = Uri.parse("http://www.baidu.com");
 
   /**
@@ -94,7 +94,7 @@ public interface Navigator {
   /**
    * Navigate with action.
    *
-   * @param fragment frament to use
+   * @param fragment fragment to use
    * @param data data
    */
   @Action(Intent.ACTION_VIEW) void navigateWithAction(@Caller Fragment fragment,

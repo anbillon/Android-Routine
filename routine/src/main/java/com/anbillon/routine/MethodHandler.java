@@ -72,6 +72,20 @@ abstract class MethodHandler<T> {
     }
   }
 
+  static final class Action extends MethodHandler<String> {
+    public Action(String value) {
+      super(value);
+    }
+
+    @Override void apply(RouterBuilder builder) throws IllegalArgumentException {
+      if (value == null) {
+        throw new IllegalArgumentException("Action value must not be null.");
+      }
+
+      builder.action(value);
+    }
+  }
+
   static final class Flags extends MethodHandler<Integer> {
     final boolean set;
 
@@ -98,20 +112,6 @@ abstract class MethodHandler<T> {
       if (value != null) {
         builder.requestCode(value);
       }
-    }
-  }
-
-  static final class Action extends MethodHandler<String> {
-    public Action(String value) {
-      super(value);
-    }
-
-    @Override void apply(RouterBuilder builder) throws IllegalArgumentException {
-      if (value == null) {
-        throw new IllegalArgumentException("Flags value must not be null.");
-      }
-
-      builder.action(value);
     }
   }
 
