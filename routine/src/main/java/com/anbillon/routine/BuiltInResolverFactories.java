@@ -128,6 +128,7 @@ final class BuiltInResolverFactories extends Resolver.Factory {
 
     @Override public void startActivity(Intent intent, int enterAnim, int exitAnim)
         throws ActivityNotFoundException {
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       context.startActivity(intent);
     }
 

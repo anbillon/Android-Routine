@@ -52,7 +52,6 @@ void navigateWithDynamicSchemeUrl(@Caller Context context, @SchemeUrl String url
 Routine routine = new Routine.Builder().addInterceptor(new RoutineAuthInterceptor())
         .addInterceptor(
             new RoutineLoggingInterceptor().setLevel(RoutineLoggingInterceptor.Level.ALL))
-        .errorPage(ErrorActivity.class)
         .build();
 Navigator navigator = routine.create(Navigator.class);
 ```
