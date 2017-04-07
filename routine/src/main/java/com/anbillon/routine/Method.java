@@ -21,7 +21,7 @@ package com.anbillon.routine;
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
  */
-public enum Method {
+enum Method {
   SCHEME_URL,
   PAGE_NAME,
   PAGE,

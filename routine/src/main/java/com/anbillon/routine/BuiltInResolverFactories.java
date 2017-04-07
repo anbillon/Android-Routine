@@ -135,7 +135,7 @@ final class BuiltInResolverFactories extends Resolver.Factory {
     @Override
     public void startActivityForResult(Intent intent, int requestCode, int enterAnim, int exitAnim)
         throws ActivityNotFoundException {
-      throw new RuntimeException("Unsupported method for this type of resolver");
+      throw new RuntimeException("Unsupported method for this type of resolver.");
     }
   }
 }

@@ -67,10 +67,10 @@ public final class RoutineLoggingInterceptor implements Interceptor {
     String destination = router.destination();
     logger.log("To: " + (destination != null ? destination : "No destination page found"));
     if (router.intent().getFlags() > 0) {
-      logger.log("Flags: " + "0x" + Integer.toHexString(router.intent().getFlags()));
+      logger.log("Flags: " + String.format("0x%08X", router.intent().getFlags()));
     }
     if (router.requestCode() >= 0) {
-      logger.log("RequestCode: " + "0x" + Integer.toHexString(router.requestCode()));
+      logger.log("RequestCode: " + String.format("0x%08X", router.requestCode()));
     }
 
     Bundle extras = router.intent().getExtras();
@@ -143,17 +143,17 @@ public final class RoutineLoggingInterceptor implements Interceptor {
     NONE,
 
     /**
-     * Logs `from`, `to`, extended data and flags.
+     * Logs `from`, `to`, extended data and so on.
      *
      * <p>Example:
      * <pre>{@code
-     * --> SCHEME URL demo://test/login?id=2
+     * --> SCHEME_URL demo://test/login?id=2
      *
      * From: com.example.DemoActivity
      * To: com.example.TargetActivity
      * Flags: 0x00000001
      *
-     * <-- END SCHEME URL
+     * <-- END SCHEME_URL
      * }</pre>
      */
     ALL,

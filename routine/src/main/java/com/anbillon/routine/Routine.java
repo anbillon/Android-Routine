@@ -121,8 +121,8 @@ public final class Routine {
   /**
    * Returns the {@link Resolver} from available {@linkplain #resolverFactories factories}.
    *
-   * @param caller resolver
-   * @param <T> type of resolver
+   * @param caller caller
+   * @param <T> type of caller
    * @return {@link Resolver}
    */
   <T> Resolver resolver(T caller) {
