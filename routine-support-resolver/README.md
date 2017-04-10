@@ -17,4 +17,4 @@ Routine routine = new Routine.Builder()
 
 Download
 =======
-	compile 'com.anbillon.routine:support-resolver:1.1.0'
+	compile 'com.anbillon.routine:support-resolver:1.1.1'
