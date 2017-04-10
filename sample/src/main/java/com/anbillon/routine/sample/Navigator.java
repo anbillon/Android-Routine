@@ -2,11 +2,15 @@ package com.anbillon.routine.sample;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import com.anbillon.routine.Router;
+import com.anbillon.routine.app.Action;
 import com.anbillon.routine.app.Anim;
 import com.anbillon.routine.app.Caller;
 import com.anbillon.routine.app.Extra;
+import com.anbillon.routine.app.ExtraSet;
 import com.anbillon.routine.app.Flags;
 import com.anbillon.routine.app.Page;
 import com.anbillon.routine.app.PageName;
@@ -22,6 +26,8 @@ import rx.Observable;
  */
 public interface Navigator {
   String EXTRA_ID = "com.anbillon.EXTRA_ID";
+  Uri PICK_IMAGE = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+  Uri BROWSER = Uri.parse("http://www.baidu.com");
 
   /**
    * Navigate to {@link DemoActivity} with scheme url.
@@ -35,7 +41,7 @@ public interface Navigator {
    *
    * @param context context to use
    */
-  @PageName("com.anbillon.sample.ui.DemoActivity") @Flags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+  @PageName("com.anbillon.routine.sample.ui.DemoActivity") @Flags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
   void navigateToDemoWithPageName(@Caller Context context, @Extra(EXTRA_ID) String id,
       @RequestCode int requestCode);
 
@@ -73,7 +79,24 @@ public interface Navigator {
    * Navigate with dynamic scheme url.
    *
    * @param context context to use
-   * @param url dynamic shceme url
+   * @param url dynamic scheme url
    */
   void navigateWithDynamicSchemeUrl(@Caller Context context, @SchemeUrl String url);
+
+  /**
+   * Navigate with dynamic page name.
+   *
+   * @param fragment fragment to use
+   * @param pageName page name
+   */
+  void navigateWithDynamicPageName(@Caller Fragment fragment, @PageName String pageName);
+
+  /**
+   * Navigate with action.
+   *
+   * @param fragment fragment to use
+   * @param data data
+   */
+  @Action(Intent.ACTION_VIEW) void navigateWithAction(@Caller Fragment fragment,
+      @ExtraSet Uri data);
 }

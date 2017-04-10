@@ -14,49 +14,58 @@
  * limitations under the License.
  */
 
-package com.anbillon.routine.adapter.rxjava;
+package com.anbillon.adapter.rxjava2;
 
 import com.anbillon.routine.Adapter;
 import com.anbillon.routine.Routine;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.Single;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import rx.Observable;
-import rx.Scheduler;
-import rx.Single;
 
 /**
- * A {@linkplain Adapter.Factory adapter} which uses RxJava for creating observables.
+ * A {@linkplain Adapter.Factory adapter} which uses RxJava2 for creating observables.
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
  */
-public final class RxJavaAdapterFactory extends Adapter.Factory {
+public final class RxJava2AdapterFactory extends Adapter.Factory {
   private final Scheduler scheduler;
 
-  private RxJavaAdapterFactory(Scheduler scheduler) {
+  private RxJava2AdapterFactory(Scheduler scheduler) {
     this.scheduler = scheduler;
   }
 
   /**
    * Returns an instance which creates observables that do not operate on any scheduler by default.
    */
-  public static RxJavaAdapterFactory create() {
-    return new RxJavaAdapterFactory(null);
+  public static RxJava2AdapterFactory create() {
+    return new RxJava2AdapterFactory(null);
   }
 
   /**
    * Returns an instance which creates synchronous observables that {@linkplain
    * Observable#subscribeOn(Scheduler) subscribe on} {@code scheduler} by default.
    */
-  public static RxJavaAdapterFactory create(Scheduler scheduler) {
-    return new RxJavaAdapterFactory(scheduler);
+  public static RxJava2AdapterFactory create(Scheduler scheduler) {
+    if (scheduler == null) {
+      throw new NullPointerException("scheduler == null");
+    }
+    return new RxJava2AdapterFactory(scheduler);
   }
 
   @Override public Adapter<?> get(Type returnType, Annotation[] annotations, Routine routine) {
     Class<?> rawType = getRawType(returnType);
+
+    boolean isFlowable = rawType == Flowable.class;
     boolean isSingle = rawType == Single.class;
-    boolean isCompletable = "rx.Completable".equals(rawType.getCanonicalName());
-    if (rawType != Observable.class && !isSingle && !isCompletable) {
+    boolean isMaybe = rawType == Maybe.class;
+    boolean isCompletable = rawType == Completable.class;
+    if (rawType != Observable.class && !isFlowable && !isSingle && !isMaybe) {
       return null;
     }
 
@@ -70,6 +79,6 @@ public final class RxJavaAdapterFactory extends Adapter.Factory {
       callType = rawObservableType;
     }
 
-    return new RxJavaAdapter(callType, scheduler, isSingle, isCompletable);
+    return new RxJava2Adapter(callType, scheduler, isFlowable, isSingle, isMaybe, isCompletable);
   }
 }

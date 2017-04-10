@@ -21,24 +21,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Open a new page via page class. The is same with the normal method to open a new page.
- * <p>
- * For example:
- * <pre><code>
- * {@code} @Page(DemoActivity.class)
- * {@code} void navigateToDemo();
- * </code></pre>
+ * General action to be performed. Application-specific actions should be prefixed with the
+ * vendor's package name. Normally it's necessary if you want to start intent with action such as
+ * ACTION_VIEW.
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
- * @see SchemeUrl
- * @see PageName
  */
-@Documented @Target(METHOD) @Retention(RUNTIME) public @interface Page {
+@Documented @Target({ METHOD, PARAMETER }) @Retention(RUNTIME) public @interface Action {
   /**
-   * The value of page.
+   * General action to be performed.
    */
-  Class<?> value() default Void.class;
+  String value() default "";
 }

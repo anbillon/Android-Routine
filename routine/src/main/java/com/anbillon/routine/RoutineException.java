@@ -14,31 +14,13 @@
  * limitations under the License.
  */
 
-package com.anbillon.routine.app;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+package com.anbillon.routine;
 
 /**
- * Open a new page via page class. The is same with the normal method to open a new page.
- * <p>
- * For example:
- * <pre><code>
- * {@code} @Page(DemoActivity.class)
- * {@code} void navigateToDemo();
- * </code></pre>
+ * RoutineException for an unexpected error.
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
- * @see SchemeUrl
- * @see PageName
  */
-@Documented @Target(METHOD) @Retention(RUNTIME) public @interface Page {
-  /**
-   * The value of page.
-   */
-  Class<?> value() default Void.class;
+public final class RoutineException extends Exception {
+
 }

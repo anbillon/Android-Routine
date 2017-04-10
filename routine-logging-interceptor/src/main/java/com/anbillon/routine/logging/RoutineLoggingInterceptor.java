@@ -1,11 +1,27 @@
+/*
+ * Copyright (C) 2017 Tourbillon Group
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.anbillon.routine.logging;
 
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import com.anbillon.routine.Interceptor;
 import com.anbillon.routine.Router;
+import com.anbillon.routine.RoutineException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -39,23 +55,22 @@ public final class RoutineLoggingInterceptor implements Interceptor {
     return this;
   }
 
-  @Override public Router intercept(Chain chain) {
+  @Override public Router intercept(Chain chain) throws RoutineException {
     Router router = chain.router();
 
     if (level == Level.NONE) {
       return chain.proceed(router);
     }
 
-    logger.log("-->" + ' ' + router.method() + ' ' + router.destination());
+    logger.log("-->" + ' ' + router.method() + ' ' + router.target());
     logger.log("From: " + router.origin());
-    ActivityInfo activityInfo =
-        router.intent().resolveActivityInfo(router.context().getPackageManager(), 0);
-    logger.log("To: " + (activityInfo != null ? activityInfo.name : "No destination page found"));
+    String destination = router.destination();
+    logger.log("To: " + (destination != null ? destination : "No destination page found"));
     if (router.intent().getFlags() > 0) {
-      logger.log("Flags: " + "0x" + Integer.toHexString(router.intent().getFlags()));
+      logger.log("Flags: " + String.format("0x%08X", router.intent().getFlags()));
     }
     if (router.requestCode() >= 0) {
-      logger.log("RequestCode: " + "0x" + Integer.toHexString(router.requestCode()));
+      logger.log("RequestCode: " + String.format("0x%08X", router.requestCode()));
     }
 
     Bundle extras = router.intent().getExtras();
@@ -128,17 +143,17 @@ public final class RoutineLoggingInterceptor implements Interceptor {
     NONE,
 
     /**
-     * Logs `from`, `to`, extended data and flags.
+     * Logs `from`, `to`, extended data and so on.
      *
      * <p>Example:
      * <pre>{@code
-     * --> SCHEME URL demo://test/login?id=2
+     * --> SCHEME_URL demo://test/login?id=2
      *
      * From: com.example.DemoActivity
      * To: com.example.TargetActivity
      * Flags: 0x00000001
      *
-     * <-- END SCHEME URL
+     * <-- END SCHEME_URL
      * }</pre>
      */
     ALL,

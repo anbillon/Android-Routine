@@ -14,35 +14,39 @@
  * limitations under the License.
  */
 
-package com.anbillon.routine.adapter.rxjava;
+package com.anbillon.adapter.rxjava2;
 
 import com.anbillon.routine.Adapter;
 import com.anbillon.routine.Router;
 import com.anbillon.routine.RouterCall;
 import com.anbillon.routine.RoutineException;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.Scheduler;
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.plugins.RxJavaPlugins;
 import java.lang.reflect.Type;
-import rx.Observable;
-import rx.Observable.OnSubscribe;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.exceptions.CompositeException;
-import rx.exceptions.Exceptions;
-import rx.plugins.RxJavaPlugins;
 
 /**
  * @author Vincent Cheung (coolingfall@gmail.com)
  */
-final class RxJavaAdapter implements Adapter<Object> {
+final class RxJava2Adapter implements Adapter<Object> {
   private final Type callType;
   private final Scheduler scheduler;
+  private final boolean isFlowable;
   private final boolean isSingle;
+  private final boolean isMaybe;
   private final boolean isCompletable;
 
-  public RxJavaAdapter(Type callType, Scheduler scheduler, boolean isSingle,
-      boolean isCompletable) {
+  RxJava2Adapter(Type callType, Scheduler scheduler, boolean isFlowable, boolean isSingle,
+      boolean isMaybe, boolean isCompletable) {
     this.callType = callType;
     this.scheduler = scheduler;
+    this.isFlowable = isFlowable;
     this.isSingle = isSingle;
+    this.isMaybe = isMaybe;
     this.isCompletable = isCompletable;
   }
 
@@ -51,100 +55,91 @@ final class RxJavaAdapter implements Adapter<Object> {
   }
 
   @Override public Object adapt(RouterCall call) {
-    OnSubscribe<?> func;
+    Observable<?> observable;
     if (callType == Boolean.class) {
-      func = new BooleanOnSubscribe(call);
+      observable = new BooleanObservable(call);
     } else if (callType == Router.class) {
-      func = new RouterOnSubscribe(call);
+      observable = new RouterObservable(call);
     } else {
-      func = new VoidOnSubscribe(call);
+      observable = new VoidObservable(call);
     }
-    Observable<?> observable = Observable.create(func);
 
     if (scheduler != null) {
       observable = observable.subscribeOn(scheduler);
     }
 
-    if (isSingle) {
-      return observable.toSingle();
+    if (isFlowable) {
+      return observable.toFlowable(BackpressureStrategy.LATEST);
     }
-
+    if (isSingle) {
+      return observable.singleOrError();
+    }
+    if (isMaybe) {
+      return observable.singleElement();
+    }
     if (isCompletable) {
-      return CompletableHelper.toCompletable(observable);
+      return observable.ignoreElements();
     }
 
     return observable;
   }
 
-  /**
-   * Separate static class defers classloading and bytecode verification since Completable is not an
-   * RxJava stable API yet.
-   */
-  private static final class CompletableHelper {
-    static Object toCompletable(Observable<?> observable) {
-      return observable.toCompletable();
-    }
-  }
-
-  private static void handleException(Subscriber<?> subscriber, RoutineException e) {
+  private static void handleException(Observer<?> observer, RoutineException e) {
     try {
-      subscriber.onError(e);
+      observer.onError(e);
     } catch (Throwable inner) {
       Exceptions.throwIfFatal(inner);
       CompositeException composite = new CompositeException(e, inner);
-      RxJavaPlugins.getInstance().getErrorHandler().handleError(composite);
+      RxJavaPlugins.onError(composite);
     }
   }
 
-  final class RouterOnSubscribe implements OnSubscribe<Router> {
+  final class RouterObservable extends Observable<Router> {
     private final RouterCall call;
 
-    RouterOnSubscribe(RouterCall call) {
+    RouterObservable(RouterCall call) {
       this.call = call;
     }
 
-    @Override public void call(Subscriber<? super Router> subscriber) {
+    @Override protected void subscribeActual(Observer<? super Router> observer) {
       try {
-        subscriber.onNext(call.router());
+        observer.onNext(call.router());
       } catch (RoutineException e) {
-        handleException(subscriber, e);
+        handleException(observer, e);
       }
-      subscriber.onCompleted();
     }
   }
 
-  final class BooleanOnSubscribe implements OnSubscribe<Boolean> {
+  final class BooleanObservable extends Observable<Boolean> {
     private final RouterCall call;
 
-    BooleanOnSubscribe(RouterCall call) {
+    BooleanObservable(RouterCall call) {
       this.call = call;
     }
 
-    @Override public void call(Subscriber<? super Boolean> subscriber) {
+    @Override protected void subscribeActual(Observer<? super Boolean> observer) {
       try {
-        subscriber.onNext(call.execute());
+        observer.onNext(call.execute());
       } catch (RoutineException e) {
-        handleException(subscriber, e);
+        handleException(observer, e);
       }
-      subscriber.onCompleted();
     }
   }
 
-  final class VoidOnSubscribe implements OnSubscribe<Void> {
+  final class VoidObservable extends Observable<Void> {
     private final RouterCall call;
 
-    VoidOnSubscribe(RouterCall call) {
+    VoidObservable(RouterCall call) {
       this.call = call;
     }
 
-    @Override public void call(Subscriber<? super Void> subscriber) {
+    @Override protected void subscribeActual(Observer<? super Void> observer) {
       try {
         call.execute();
-        subscriber.onNext(null);
+        observer.onComplete();
       } catch (RoutineException e) {
-        handleException(subscriber, e);
+        handleException(observer, e);
       }
-      subscriber.onCompleted();
     }
   }
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Tourbillon Group
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.anbillon.routine;
 
 import java.lang.annotation.Annotation;
@@ -19,12 +35,10 @@ import static com.anbillon.routine.Utils.checkNotNull;
  * <p>
  * For example:
  * <pre><code>
- *   Routine routine = new Routine.Builder()
- *      .errorPage(ErrorActivity.class)
- *      .build();
+ *   Routine routine = new Routine.Builder().build();
  *
- *  MyRouter router = routine.create(MyRouter.class);
- *  router.navigateToDemo(contex);
+ *  MyRouter router = routine.router(MyRouter.class);
+ *  router.navigateToDemo(context);
  * </code></pre>
  * </p>
  *
@@ -36,36 +50,28 @@ public final class Routine {
   private final List<Filter> filters;
   private final List<Adapter.Factory> adapterFactories;
   private final List<Resolver.Factory> resolverFactories;
-  private final Class<?> errorPage;
 
   private Routine(Builder builder) {
     this.interceptors = Utils.immutableList(builder.interceptors);
     this.filters = Utils.immutableList(builder.filters);
     this.adapterFactories = Utils.immutableList(builder.adapterFactories);
     this.resolverFactories = Utils.immutableList(builder.resolverFactories);
-    this.errorPage = builder.errorPage;
   }
 
   /**
-   * Create an implementation of navigator defined by the {@code router} interface.
-   * <p>
-   * The navigate type for a given method is obtained origin an annotation on the method
-   * describing the request type. The built-in methods are {@link com.anbillon.routine.app.SchemeUrl
-   * SchemeUrl}, {@link com.anbillon.routine.app.PageName PageName} and {@link
-   * com.anbillon.routine.app.Page Page}. For a dynamic shceme url, omit the path on the
+   * Create an implementation of navigator defined by the {@code router} interface. <p> The navigate
+   * type for a given method is obtained origin an annotation on the method describing the request
+   * type. The built-in methods are {@link com.anbillon.routine.app.SchemeUrl SchemeUrl}, {@link
+   * com.anbillon.routine.app.PageName PageName}, {@link com.anbillon.routine.app.Page Page} and
+   * {@link com.anbillon.routine.app.Action}. For a dynamic scheme url, omit the target on the
    * annotation and annotate the parameter with {@link com.anbillon.routine.app.SchemeUrl
    * SchemeUrl}. If no annotations on method and no SchemeUrl on parameter, exception will occur.
-   * <p>
-   * You can add custom flags on method with {@link com.anbillon.routine.app.Flags Flags}.
-   * <p>
-   * Each navigation must include one and only one {@link com.anbillon.routine.app.Caller
-   * Caller} whose type is {@link android.content.Context}.
-   * <p>
-   * You can add extended data in call by adding annotation on parameters with {@link
-   * com.anbillon.routine.app.Extra Extra} and {@link com.anbillon.routine.app.ExtraSet
-   * ExtraSet}. One or more extras can be added in.
-   * <p>
-   * If you want navigation with result, then add annotation on parameter with {@link
+   * <p> You can add custom flags on method with {@link com.anbillon.routine.app.Flags Flags}. <p>
+   * Each navigation must include one and only one {@link com.anbillon.routine.app.Caller Caller}
+   * whose type is {@link android.content.Context}. <p> You can add extended data in call by adding
+   * annotation on parameters with {@link com.anbillon.routine.app.Extra Extra} and {@link
+   * com.anbillon.routine.app.ExtraSet ExtraSet}. One or more extras can be added in. <p> If you
+   * want navigation with result, then add annotation on parameter with {@link
    * com.anbillon.routine.app.RequestCode RequestCode}.
    *
    * @param router router interface
@@ -75,7 +81,7 @@ public final class Routine {
   @SuppressWarnings("unchecked") public <T> T create(final Class<T> router) {
     Utils.validateRouterInterface(router);
 
-    return (T) Proxy.newProxyInstance(router.getClassLoader(), new Class<?>[] { router },
+    return (T) Proxy.newProxyInstance(router.getClassLoader(), new Class<?>[] {router},
         new InvocationHandler() {
           @Override public Object invoke(Object proxy, Method method, Object[] args)
               throws Throwable {
@@ -86,7 +92,7 @@ public final class Routine {
 
             RouterMethod routerMethod = loadRouterMethod(method);
             RouterCall routerCall = new RouterCall<>(routerMethod, interceptors, filters, args);
-            return routerMethod.adapter.adapt(routerCall.create());
+            return routerMethod.adapter.adapt(routerCall);
           }
         });
   }
@@ -102,8 +108,8 @@ public final class Routine {
   Adapter<?> adapter(Type returnType, Annotation[] annotations) {
     checkNotNull(returnType, "returnType == null");
     checkNotNull(annotations, "annotations == null");
-    for (int i = 0, count = adapterFactories.size(); i < count; i++) {
-      Adapter<?> adapter = adapterFactories.get(i).get(returnType, annotations, this);
+    for (Adapter.Factory adapterFactory : adapterFactories) {
+      Adapter<?> adapter = adapterFactory.get(returnType, annotations, this);
       if (adapter != null) {
         return adapter;
       }
@@ -115,29 +121,19 @@ public final class Routine {
   /**
    * Returns the {@link Resolver} from available {@linkplain #resolverFactories factories}.
    *
-   * @param caller resolver
-   * @param <T> type of resolver
+   * @param caller caller
+   * @param <T> type of caller
    * @return {@link Resolver}
    */
   <T> Resolver resolver(T caller) {
-    for (int i = 0, count = resolverFactories.size(); i < count; i++) {
-      Resolver.Factory factory = resolverFactories.get(i);
+    for (Resolver.Factory factory : resolverFactories) {
       Resolver resolver = factory.create(caller);
       if (resolver != null) {
         return resolver;
       }
     }
 
-    throw new IllegalArgumentException("No resolver found, resolver type is not supported.");
-  }
-
-  /**
-   * The error page to open when an error occured.
-   *
-   * @return error page clazz
-   */
-  Class<?> errorPage() {
-    return errorPage;
+    throw new IllegalArgumentException("No resolver found, caller type is not supported.");
   }
 
   /**
@@ -168,7 +164,6 @@ public final class Routine {
     private List<Filter> filters = new ArrayList<>();
     private List<Adapter.Factory> adapterFactories = new ArrayList<>();
     private List<Resolver.Factory> resolverFactories = new ArrayList<>();
-    private Class<?> errorPage;
 
     public Builder() {
       adapterFactories.add(new DefaultAdapterFactories());
@@ -216,17 +211,6 @@ public final class Routine {
      */
     public Builder addFilter(Filter filter) {
       filters.add(filter);
-      return this;
-    }
-
-    /**
-     * Navigate to a error page when the given page is not found.
-     *
-     * @param errorPage error page
-     * @return this builder for further chaining
-     */
-    public Builder errorPage(Class<?> errorPage) {
-      this.errorPage = errorPage;
       return this;
     }
 

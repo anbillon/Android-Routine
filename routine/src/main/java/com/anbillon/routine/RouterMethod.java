@@ -1,7 +1,25 @@
+/*
+ * Copyright (C) 2017 Tourbillon Group
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.anbillon.routine;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import com.anbillon.routine.app.Action;
 import com.anbillon.routine.app.Anim;
 import com.anbillon.routine.app.Caller;
 import com.anbillon.routine.app.Extra;
@@ -16,6 +34,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import static com.anbillon.routine.Utils.getRawType;
+import static com.anbillon.routine.Utils.hasUnresolvableType;
 
 /**
  * Parse an invocation of an interface method into a router.
@@ -25,18 +44,16 @@ import static com.anbillon.routine.Utils.getRawType;
 final class RouterMethod<T> {
   private final MethodHandler<?>[] methodHandlers;
   private final ParameterHandler<?>[] parameterHandlers;
-  private final Class<?> errorPage;
   final Adapter<T> adapter;
 
   RouterMethod(Builder<T> builder) {
     this.methodHandlers = builder.methodHandlers;
     this.parameterHandlers = builder.parameterHandlers;
     this.adapter = builder.adapter;
-    this.errorPage = builder.routine.errorPage();
   }
 
   Router toRouter(Object... args) throws IllegalArgumentException {
-    RouterBuilder routerBuilder = new RouterBuilder(errorPage);
+    RouterBuilder routerBuilder = new RouterBuilder();
 
     for (MethodHandler<?> handler : methodHandlers) {
       handler.apply(routerBuilder);
@@ -69,8 +86,10 @@ final class RouterMethod<T> {
     final Type[] parameterTypes;
 
     boolean gotCaller;
-    boolean gotRequestCode;
     boolean gotSchemeUrl;
+    boolean gotPageName;
+    boolean gotAction;
+    boolean gotRequestCode;
     boolean gotExtraSet;
     ParameterHandler<?>[] parameterHandlers;
     MethodHandler<?>[] methodHandlers;
@@ -107,7 +126,7 @@ final class RouterMethod<T> {
       parameterHandlers = new ParameterHandler<?>[parameterCount];
       for (int p = 0; p < parameterCount; p++) {
         Type parameterType = parameterTypes[p];
-        if (Utils.hasUnresolvableType(parameterType)) {
+        if (hasUnresolvableType(parameterType)) {
           throw parameterError(p, "Parameter type must not include a type variable or wildcard: %s",
               parameterType);
         }
@@ -120,9 +139,9 @@ final class RouterMethod<T> {
         parameterHandlers[p] = parseParameter(p, parameterType, parameterAnnotations);
       }
 
-      if (methodHandlers.length == 0 && !gotSchemeUrl) {
+      if (methodHandlers.length == 0 && !gotSchemeUrl && !gotPageName) {
         throw methodError(
-            "Routine method annotation is required (@SchemeUrl, @Page or @PageName).");
+            "Routine method annotation is required (@SchemeUrl, @Page, @PageName or @Action).");
       }
 
       if (!gotCaller) {
@@ -134,7 +153,7 @@ final class RouterMethod<T> {
 
     @SuppressWarnings("unchecked") private Adapter<T> createAdapter() {
       Type returnType = method.getGenericReturnType();
-      if (Utils.hasUnresolvableType(returnType)) {
+      if (hasUnresolvableType(returnType)) {
         throw methodError("Method return type must not include a type variable or wildcard: %s",
             returnType);
       }
@@ -143,7 +162,7 @@ final class RouterMethod<T> {
       try {
         return (Adapter<T>) routine.adapter(returnType, annotations);
       } catch (RuntimeException e) {
-        throw methodError(e, "Unable to create adapter for %s", returnType);
+        throw methodError(e, "Unable to router adapter for %s", returnType);
       }
     }
 
@@ -152,12 +171,19 @@ final class RouterMethod<T> {
         gotSchemeUrl = true;
         return new MethodHandler.SchemeUrl(((SchemeUrl) annotation).value());
       } else if (annotation instanceof PageName) {
+        gotPageName = true;
         return new MethodHandler.PageName(((PageName) annotation).value());
       } else if (annotation instanceof Page) {
         return new MethodHandler.Page(((Page) annotation).value());
+      } else if (annotation instanceof Action) {
+        gotAction = true;
+        return new MethodHandler.Action(((Action) annotation).value());
       } else if (annotation instanceof Flags) {
         Flags flags = (Flags) annotation;
         return new MethodHandler.Flags(flags.value(), (flags.set()));
+      } else if (annotation instanceof RequestCode) {
+        gotRequestCode = true;
+        return new MethodHandler.RequestCode(((RequestCode) annotation).value());
       } else if (annotation instanceof Anim) {
         Anim anim = (Anim) annotation;
         return new MethodHandler.Anim(anim.enter(), anim.exit());
@@ -178,9 +204,40 @@ final class RouterMethod<T> {
         return new ParameterHandler.Caller(routine);
       }
 
+      if (annotation instanceof SchemeUrl) {
+        if (gotSchemeUrl) {
+          throw parameterError(p, "Multiple @SchemeUrl annotations found on method and parameter.");
+        }
+
+        gotSchemeUrl = true;
+
+        return new ParameterHandler.SchemeUrl();
+      }
+
+      if (annotation instanceof PageName) {
+        if (gotPageName) {
+          throw parameterError(p, "Multiple @PageName annotations found on method and parameter.");
+        }
+
+        gotPageName = true;
+
+        return new ParameterHandler.PageName();
+      }
+
+      if (annotation instanceof Action) {
+        if (gotAction) {
+          throw parameterError(p, "Multiple @Action annotations found on method and parameter.");
+        }
+
+        gotAction = true;
+
+        return new ParameterHandler.Action();
+      }
+
       if (annotation instanceof RequestCode) {
         if (gotRequestCode) {
-          throw parameterError(p, "Multiple @RequestCode parameter annotations found.");
+          throw parameterError(p,
+              "Multiple @RequestCode annotations found on method and parameter.");
         }
 
         gotRequestCode = true;
@@ -190,16 +247,6 @@ final class RouterMethod<T> {
         } else {
           throw parameterError(p, "@RequestCode must be int type.");
         }
-      }
-
-      if (annotation instanceof SchemeUrl) {
-        if (gotSchemeUrl) {
-          throw parameterError(p, "Multiple @SchemeUrl annotations found on method and parameter.");
-        }
-
-        gotSchemeUrl = true;
-
-        return new ParameterHandler.SchemeUrl();
       }
 
       if (annotation instanceof Extra) {
@@ -214,15 +261,15 @@ final class RouterMethod<T> {
 
         gotExtraSet = true;
 
-        if (type == Bundle.class || type == Intent.class) {
+        if (type == Bundle.class || type == Intent.class || type == Uri.class) {
           return new ParameterHandler.ExtraSet<>();
         } else {
           throw parameterError(p,
-              "@ExtraSet must be android.os.Bundle or android.content.Intent type.");
+              "@ExtraSet must be android.os.Bundle, android.content.Intent or android.net.Uri type.");
         }
       }
 
-      /* no annotation paramater */
+      /* no annotation parameter */
       return null;
     }
 

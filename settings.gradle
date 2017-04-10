@@ -1,2 +1,3 @@
 include ':sample', ':routine', ':routine-logging-interceptor', ':routine-support-resolver',
-    ':routine-adapter-rxjava'
+        ':routine-adapter-rxjava', ':routine-adapter-rxjava2'
+

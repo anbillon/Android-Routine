@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Tourbillon Group
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.anbillon.routine;
 
 import java.lang.reflect.Type;
@@ -26,23 +42,41 @@ abstract class ParameterHandler<T> {
     }
   }
 
-  static final class RequestCode extends ParameterHandler<Integer> {
-    @Override void apply(RouterBuilder builder, Integer value) throws IllegalArgumentException {
-      if (value == null || value == -1) {
-        throw new IllegalArgumentException("RequestCode parameter value must not be null or -1.");
+  static final class PageName extends ParameterHandler<String> {
+    @Override void apply(RouterBuilder builder, String value) throws IllegalArgumentException {
+      if (value == null) {
+        throw new IllegalArgumentException("PageName parameter value must not be null.");
       }
 
-      builder.requestCode(value);
+      builder.pageName(value);
     }
   }
 
   static final class SchemeUrl extends ParameterHandler<String> {
     @Override void apply(RouterBuilder builder, String value) throws IllegalArgumentException {
       if (value == null) {
-        throw new IllegalArgumentException("SchemeUrl parameter value must not be null");
+        throw new IllegalArgumentException("SchemeUrl parameter value must not be null.");
       }
 
       builder.schemeUrl(value);
+    }
+  }
+
+  static final class Action extends ParameterHandler<String> {
+    @Override void apply(RouterBuilder builder, String value) throws IllegalArgumentException {
+      if (value == null) {
+        throw new IllegalArgumentException("Action parameter value must not be null.");
+      }
+
+      builder.action(value);
+    }
+  }
+
+  static final class RequestCode extends ParameterHandler<Integer> {
+    @Override void apply(RouterBuilder builder, Integer value) throws IllegalArgumentException {
+      if (value != null) {
+        builder.requestCode(value);
+      }
     }
   }
 
@@ -56,22 +90,17 @@ abstract class ParameterHandler<T> {
     }
 
     @Override void apply(RouterBuilder builder, T value) throws IllegalArgumentException {
-      if (value == null) {
-        throw new IllegalArgumentException(
-            "Extra parameter \"" + name + "\" value must not be null.");
+      if (value != null) {
+        builder.putExtra(name, type, value);
       }
-
-      builder.putExtra(name, type, value);
     }
   }
 
   static final class ExtraSet<T> extends ParameterHandler<T> {
     @Override void apply(RouterBuilder builder, T value) throws IllegalArgumentException {
-      if (value == null) {
-        throw new IllegalArgumentException("ExtraSet parameter value must not be null.");
+      if (value != null) {
+        builder.putExtras(value);
       }
-
-      builder.putExtras(value);
     }
   }
 }

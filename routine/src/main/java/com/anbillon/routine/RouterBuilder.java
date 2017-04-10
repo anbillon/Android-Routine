@@ -1,6 +1,23 @@
+/*
+ * Copyright (C) 2017 Tourbillon Group
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.anbillon.routine;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import java.io.Serializable;
@@ -18,18 +35,13 @@ import static com.anbillon.routine.Utils.getExtraRawType;
 final class RouterBuilder {
   private final Intent intent;
   private Method method;
-  private String destination;
-  private String schemeUrl;
-  private String pageName;
-  private Class<?> page;
-  private Class<?> errorPage;
+  private String target;
   private Resolver resolver;
   private int requestCode = -1;
   private int enterAnim;
   private int exitAnim;
 
-  RouterBuilder(Class<?> errorPage) {
-    this.errorPage = errorPage;
+  RouterBuilder() {
     this.intent = new Intent();
   }
 
@@ -39,20 +51,18 @@ final class RouterBuilder {
    * @param schemeUrl scheme url
    */
   void schemeUrl(String schemeUrl) {
-    this.schemeUrl = schemeUrl;
     this.method = Method.SCHEME_URL;
-    this.destination = schemeUrl;
+    this.target = schemeUrl;
   }
 
   /**
-   * Add page destination into current builder if existed.
+   * Add page target into current builder if existed.
    *
    * @param pageName page pageName
    */
   void pageName(String pageName) {
-    this.pageName = pageName;
     this.method = Method.PAGE_NAME;
-    this.destination = pageName;
+    this.target = pageName;
   }
 
   /**
@@ -61,9 +71,18 @@ final class RouterBuilder {
    * @param page page
    */
   void page(Class<?> page) {
-    this.page = page;
     this.method = Method.PAGE;
-    this.destination = page.getCanonicalName();
+    this.target = page.getCanonicalName();
+  }
+
+  /**
+   * Add action into current builder.
+   *
+   * @param action action
+   */
+  void action(String action) {
+    this.method = Method.ACTION;
+    this.target = action;
   }
 
   /**
@@ -83,8 +102,8 @@ final class RouterBuilder {
   /**
    * Add animation resource id into builder.
    *
-   * @param enterAnim enter animationn resource id
-   * @param exitAnim exit animationn resource id
+   * @param enterAnim enter animation resource id
+   * @param exitAnim exit animation resource id
    */
   void anim(int enterAnim, int exitAnim) {
     this.enterAnim = enterAnim;
@@ -112,7 +131,7 @@ final class RouterBuilder {
   /**
    * Put extended data into {@link Intent}.
    *
-   * @param name destination of extra
+   * @param name target of extra
    * @param type parameter type
    * @param value value to add
    * @param <T> type of @{code value}
@@ -166,8 +185,8 @@ final class RouterBuilder {
           intent.putIntegerArrayListExtra(name, (ArrayList<Integer>) value);
         } else if (actualTypeArgument instanceof Class<?>) {
           Class<?>[] interfaces = ((Class<?>) actualTypeArgument).getInterfaces();
-          for (Class<?> ininterfaceClazz : interfaces) {
-            if (ininterfaceClazz == Parcelable.class) {
+          for (Class<?> interfaceClazz : interfaces) {
+            if (interfaceClazz == Parcelable.class) {
               intent.putParcelableArrayListExtra(name, (ArrayList<Parcelable>) value);
               return;
             }
@@ -194,6 +213,8 @@ final class RouterBuilder {
       intent.putExtras((Bundle) extras);
     } else if (extras instanceof Intent) {
       intent.putExtras((Intent) extras);
+    } else if (extras instanceof Uri) {
+      intent.setData((Uri) extras);
     } else {
       throw new IllegalArgumentException("Unsupported type");
     }
@@ -201,11 +222,7 @@ final class RouterBuilder {
 
   Router build() {
     return new Router.Builder().method(method)
-        .destination(destination)
-        .schemeUrl(schemeUrl)
-        .pageName(pageName)
-        .page(page)
-        .errorPage(errorPage)
+        .target(target)
         .resolver(resolver)
         .intent(intent)
         .requestCode(requestCode)

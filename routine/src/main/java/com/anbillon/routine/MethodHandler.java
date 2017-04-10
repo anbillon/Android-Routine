@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2017 Tourbillon Group
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.anbillon.routine;
 
 /**
@@ -56,6 +72,20 @@ abstract class MethodHandler<T> {
     }
   }
 
+  static final class Action extends MethodHandler<String> {
+    public Action(String value) {
+      super(value);
+    }
+
+    @Override void apply(RouterBuilder builder) throws IllegalArgumentException {
+      if (value == null) {
+        throw new IllegalArgumentException("Action value must not be null.");
+      }
+
+      builder.action(value);
+    }
+  }
+
   static final class Flags extends MethodHandler<Integer> {
     final boolean set;
 
@@ -73,11 +103,23 @@ abstract class MethodHandler<T> {
     }
   }
 
+  static final class RequestCode extends MethodHandler<Integer> {
+    public RequestCode(Integer value) {
+      super(value);
+    }
+
+    @Override void apply(RouterBuilder builder) throws IllegalArgumentException {
+      if (value != null) {
+        builder.requestCode(value);
+      }
+    }
+  }
+
   static final class Anim extends MethodHandler<Integer> {
     private final Integer exit;
 
-    Anim(Integer value, Integer exit) {
-      super(value);
+    Anim(Integer enter, Integer exit) {
+      super(enter);
       this.exit = exit;
     }
 

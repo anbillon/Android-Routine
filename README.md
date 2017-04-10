@@ -52,7 +52,6 @@ void navigateWithDynamicSchemeUrl(@Caller Context context, @SchemeUrl String url
 Routine routine = new Routine.Builder().addInterceptor(new RoutineAuthInterceptor())
         .addInterceptor(
             new RoutineLoggingInterceptor().setLevel(RoutineLoggingInterceptor.Level.ALL))
-        .errorPage(ErrorActivity.class)
         .build();
 Navigator navigator = routine.create(Navigator.class);
 ```
@@ -100,9 +99,7 @@ Routine routine = new Routine.Builder().addFilter(new SchemeFilter()).build()
 @SuppressWarnings("deprecation") private class HtmlClient extends WebViewClient {
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP) @Override
   public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-    String host = request.getUrl().getHost();
-    if (!"HTTP".equals(host) && !"HTTPS".equals(host)) {
-      navigator.navigateWithDynamicSchemeUrl(context, request.getUrl().toString());
+    if (navigator.navigateWithDynamicSchemeUrl(context, request.getUrl().toString())) {
       return true;
     } else {
       return super.shouldOverrideUrlLoading(view, request);
@@ -110,9 +107,7 @@ Routine routine = new Routine.Builder().addFilter(new SchemeFilter()).build()
   }
 
   @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
-    String host = Uri.parse(url).getHost();
-    if (!"HTTP".equals(host) && !"HTTPS".equals(host)) {
-      navigator.navigateWithDynamicSchemeUrl(context, url);
+    if (navigator.navigateWithDynamicSchemeUrl(context, url)) {
       return true;
     } else {
       return super.shouldOverrideUrlLoading(view, url);
@@ -124,13 +119,13 @@ Routine routine = new Routine.Builder().addFilter(new SchemeFilter()).build()
 ``` java
 public final class RoutineAuthInterceptor implements Interceptor {
 
-  @Override public Router intercept(Chain chain) {
+  @Override public Router intercept(Chain chain) throws RoutineException {
     Router router = chain.router();
-    RouterCall.Builder builder = router.newBuilder();
-   /* your authentication logic here */
-   if (random(3) == 0) {
-      Intent intent = new Intent(call.context(), LoginActivity.class);
-      builder.intent(intent).requestCode(-1);
+    Router.Builder builder = router.newBuilder();
+    /* your authentication logic here */
+    if (random(3) == 0) {
+    Intent intent = new Intent(call.context(), LoginActivity.class);
+    builder.intent(intent).requestCode(-1);
     }
 
     return chain.proceed(builder.build());
@@ -146,7 +141,7 @@ Download
 ========
 Add in your gradle.build:
 
-	compile 'com.anbillon.routine:routine:1.1.0'
+	compile 'com.anbillon.routine:routine:1.1.1'
 
 
 
