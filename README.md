@@ -141,7 +141,7 @@ Download
 ========
 Add in your gradle.build:
 
-	compile 'com.anbillon.routine:routine:1.1.0'
+	compile 'com.anbillon.routine:routine:1.1.1'
 
 
 
