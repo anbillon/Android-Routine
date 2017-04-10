@@ -41,7 +41,7 @@ public interface Navigator {
    *
    * @param context context to use
    */
-  @PageName("com.anbillon.sample.ui.DemoActivity") @Flags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+  @PageName("com.anbillon.routine.sample.ui.DemoActivity") @Flags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
   void navigateToDemoWithPageName(@Caller Context context, @Extra(EXTRA_ID) String id,
       @RequestCode int requestCode);
 

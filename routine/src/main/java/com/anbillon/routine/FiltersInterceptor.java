@@ -18,6 +18,8 @@ package com.anbillon.routine;
 
 import android.content.Intent;
 
+import static com.anbillon.routine.Method.SCHEME_URL;
+
 /**
  * A Routine interceptor which filters wanted {@link Intent} according to scheme url.
  *
@@ -32,7 +34,7 @@ final class FiltersInterceptor implements Interceptor {
 
   @Override public Router intercept(Chain chain) throws RoutineException {
     Router router = chain.router();
-    if (router.method() != Method.SCHEME_URL) {
+    if (router.method() != SCHEME_URL) {
       return chain.proceed(router);
     }
 
