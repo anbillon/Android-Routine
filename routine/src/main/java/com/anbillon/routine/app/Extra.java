@@ -34,7 +34,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * </code></pre>
  *
  * @author Vincent Cheung (coolingfall@gmail.com)
- * @see ExtraSet
  */
 @Documented @Target(PARAMETER) @Retention(RUNTIME) public @interface Extra {
   /**

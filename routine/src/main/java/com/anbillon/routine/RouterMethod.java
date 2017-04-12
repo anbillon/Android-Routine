@@ -19,11 +19,11 @@ package com.anbillon.routine;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import com.anbillon.routine.app.Action;
 import com.anbillon.routine.app.Anim;
 import com.anbillon.routine.app.Caller;
 import com.anbillon.routine.app.Extra;
-import com.anbillon.routine.app.ExtraSet;
 import com.anbillon.routine.app.Flags;
 import com.anbillon.routine.app.Page;
 import com.anbillon.routine.app.PageName;
@@ -90,7 +90,6 @@ final class RouterMethod<T> {
     boolean gotPageName;
     boolean gotAction;
     boolean gotRequestCode;
-    boolean gotExtraSet;
     ParameterHandler<?>[] parameterHandlers;
     MethodHandler<?>[] methodHandlers;
     Adapter<T> adapter;
@@ -251,22 +250,16 @@ final class RouterMethod<T> {
 
       if (annotation instanceof Extra) {
         String name = ((Extra) annotation).value();
-        return new ParameterHandler.Extra<>(name, type);
-      }
-
-      if (annotation instanceof ExtraSet) {
-        if (gotExtraSet) {
-          throw parameterError(p, "Multiple @ExtraSet parameter annotations found.");
-        }
-
-        gotExtraSet = true;
-
-        if (type == Bundle.class || type == Intent.class || type == Uri.class) {
-          return new ParameterHandler.ExtraSet<>();
-        } else {
+        if (TextUtils.isEmpty(name)
+            && type != Bundle.class
+            && type != Intent.class
+            && type != Uri.class) {
           throw parameterError(p,
-              "@ExtraSet must be android.os.Bundle, android.content.Intent or android.net.Uri type.");
+              "@Extra must be android.os.Bundle, android.content.Intent or android.net.Uri type. "
+                  + "Otherwise @Extra must have a name like @Extra(\"id\")");
         }
+
+        return new ParameterHandler.Extra<>(name, type);
       }
 
       /* no annotation parameter */

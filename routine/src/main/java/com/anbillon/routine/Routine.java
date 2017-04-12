@@ -59,7 +59,8 @@ public final class Routine {
   }
 
   /**
-   * Create an implementation of navigator defined by the {@code router} interface. <p> The navigate
+   * Create an implementation of navigator defined by the {@code router} interface. <p> The
+   * navigate
    * type for a given method is obtained origin an annotation on the method describing the request
    * type. The built-in methods are {@link com.anbillon.routine.app.SchemeUrl SchemeUrl}, {@link
    * com.anbillon.routine.app.PageName PageName}, {@link com.anbillon.routine.app.Page Page} and
@@ -69,10 +70,9 @@ public final class Routine {
    * <p> You can add custom flags on method with {@link com.anbillon.routine.app.Flags Flags}. <p>
    * Each navigation must include one and only one {@link com.anbillon.routine.app.Caller Caller}
    * whose type is {@link android.content.Context}. <p> You can add extended data in call by adding
-   * annotation on parameters with {@link com.anbillon.routine.app.Extra Extra} and {@link
-   * com.anbillon.routine.app.ExtraSet ExtraSet}. One or more extras can be added in. <p> If you
-   * want navigation with result, then add annotation on parameter with {@link
-   * com.anbillon.routine.app.RequestCode RequestCode}.
+   * annotation on parameters with {@link com.anbillon.routine.app.Extra Extra}. One or more extras
+   * can be added in. <p> If you want navigation with result, then add annotation on parameter with
+   * {@link com.anbillon.routine.app.RequestCode RequestCode}.
    *
    * @param router router interface
    * @param <T> type of router
@@ -81,7 +81,7 @@ public final class Routine {
   @SuppressWarnings("unchecked") public <T> T create(final Class<T> router) {
     Utils.validateRouterInterface(router);
 
-    return (T) Proxy.newProxyInstance(router.getClassLoader(), new Class<?>[] {router},
+    return (T) Proxy.newProxyInstance(router.getClassLoader(), new Class<?>[] { router },
         new InvocationHandler() {
           @Override public Object invoke(Object proxy, Method method, Object[] args)
               throws Throwable {

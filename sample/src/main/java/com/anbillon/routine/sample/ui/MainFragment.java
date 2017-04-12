@@ -15,7 +15,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import static com.anbillon.routine.sample.Navigator.BROWSER;
+import static com.anbillon.routine.sample.Navigator.PICK_IMAGE;
 
 /**
  * @author Vincent Cheung (coolingfall@gmail.com)
@@ -63,7 +63,7 @@ public final class MainFragment extends Fragment implements View.OnClickListener
         break;
 
       case R.id.btn_action:
-        navigator.navigateWithAction(this, BROWSER);
+        navigator.navigateWithAction(this, PICK_IMAGE);
         break;
 
       case R.id.btn_dynamic_page_name:

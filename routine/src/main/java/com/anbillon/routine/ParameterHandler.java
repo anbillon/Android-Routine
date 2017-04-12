@@ -16,6 +16,7 @@
 
 package com.anbillon.routine;
 
+import android.text.TextUtils;
 import java.lang.reflect.Type;
 
 /**
@@ -90,15 +91,9 @@ abstract class ParameterHandler<T> {
     }
 
     @Override void apply(RouterBuilder builder, T value) throws IllegalArgumentException {
-      if (value != null) {
+      if (!TextUtils.isEmpty(name)) {
         builder.putExtra(name, type, value);
-      }
-    }
-  }
-
-  static final class ExtraSet<T> extends ParameterHandler<T> {
-    @Override void apply(RouterBuilder builder, T value) throws IllegalArgumentException {
-      if (value != null) {
+      } else {
         builder.putExtras(value);
       }
     }

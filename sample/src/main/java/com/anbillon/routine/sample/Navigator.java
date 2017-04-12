@@ -10,7 +10,6 @@ import com.anbillon.routine.app.Action;
 import com.anbillon.routine.app.Anim;
 import com.anbillon.routine.app.Caller;
 import com.anbillon.routine.app.Extra;
-import com.anbillon.routine.app.ExtraSet;
 import com.anbillon.routine.app.Flags;
 import com.anbillon.routine.app.Page;
 import com.anbillon.routine.app.PageName;
@@ -27,7 +26,6 @@ import rx.Observable;
 public interface Navigator {
   String EXTRA_ID = "com.anbillon.EXTRA_ID";
   Uri PICK_IMAGE = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-  Uri BROWSER = Uri.parse("http://www.baidu.com");
 
   /**
    * Navigate to {@link DemoActivity} with scheme url.
@@ -97,6 +95,6 @@ public interface Navigator {
    * @param fragment fragment to use
    * @param data data
    */
-  @Action(Intent.ACTION_VIEW) void navigateWithAction(@Caller Fragment fragment,
-      @ExtraSet Uri data);
+  @Action(Intent.ACTION_PICK) @RequestCode(0x12) void navigateWithAction(@Caller Fragment fragment,
+      @Extra Uri data);
 }
