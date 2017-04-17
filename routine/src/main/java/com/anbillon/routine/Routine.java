@@ -60,19 +60,19 @@ public final class Routine {
 
   /**
    * Create an implementation of navigator defined by the {@code router} interface. <p> The
-   * navigate
-   * type for a given method is obtained origin an annotation on the method describing the request
-   * type. The built-in methods are {@link com.anbillon.routine.app.SchemeUrl SchemeUrl}, {@link
-   * com.anbillon.routine.app.PageName PageName}, {@link com.anbillon.routine.app.Page Page} and
-   * {@link com.anbillon.routine.app.Action}. For a dynamic scheme url, omit the target on the
-   * annotation and annotate the parameter with {@link com.anbillon.routine.app.SchemeUrl
-   * SchemeUrl}. If no annotations on method and no SchemeUrl on parameter, exception will occur.
-   * <p> You can add custom flags on method with {@link com.anbillon.routine.app.Flags Flags}. <p>
-   * Each navigation must include one and only one {@link com.anbillon.routine.app.Caller Caller}
-   * whose type is {@link android.content.Context}. <p> You can add extended data in call by adding
-   * annotation on parameters with {@link com.anbillon.routine.app.Extra Extra}. One or more extras
-   * can be added in. <p> If you want navigation with result, then add annotation on parameter with
-   * {@link com.anbillon.routine.app.RequestCode RequestCode}.
+   * navigation type for a given method is obtained origin an annotation on the method describing
+   * the navigation type. The built-in methods are {@link com.anbillon.routine.app.SchemeUrl
+   * SchemeUrl}, {@link com.anbillon.routine.app.PageName PageName}, {@link
+   * com.anbillon.routine.app.Page Page} and {@link com.anbillon.routine.app.Action}. For a dynamic
+   * scheme url, omit the target on the annotation and annotate the parameter with {@link
+   * com.anbillon.routine.app.SchemeUrl SchemeUrl}. If no annotations on method and no SchemeUrl on
+   * parameter, exception will occur. <p> You can add custom flags on method with {@link
+   * com.anbillon.routine.app.Flags Flags}. <p> Each navigation must include one and only one
+   * {@link com.anbillon.routine.app.Caller Caller} whose type is {@link android.content.Context}.
+   * <p> You can add extended data in call by adding annotation on parameters with {@link
+   * com.anbillon.routine.app.Extra Extra}. One or more extras can be added in. <p> If you want
+   * navigation with result, then add annotation on parameter with {@link
+   * com.anbillon.routine.app.RequestCode RequestCode}.
    *
    * @param router router interface
    * @param <T> type of router
