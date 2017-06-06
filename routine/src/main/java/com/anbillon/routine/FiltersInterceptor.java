@@ -42,7 +42,8 @@ final class FiltersInterceptor implements Interceptor {
     if (intent == null) {
       return chain.proceed(router);
     }
-    intent.putExtras(router.intent());
+    Intent origin = router.intent();
+    intent.putExtras(origin).setData(origin.getData());
 
     return chain.proceed(router.newBuilder().intent(intent).build());
   }
